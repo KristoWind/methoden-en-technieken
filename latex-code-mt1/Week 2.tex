@@ -1,0 +1,113 @@
+{\large
+\textbf{{\LARGE Week 2}}\\
+Aandachtspunten:
+\begin{itemize}
+    \item KNN (classificatie)
+    \item \href{https://work.caltech.edu/telecourse}{Learning from Data}
+    \item Regularisatie ($l_1$ en  $l_2$)
+\end{itemize}
+\subsection{K-Nearest Neighbors (KNN)}
+The line where $Pr(Y=j|X=x_0)=\frac{1}{K}\sum\limits_{i\in\mathcal{N}_0}I(y_i=j)$.\\
+$\mathcal{N}_0$ represents the training data closest to $x_0$.\\
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Images/KNNmodels.png}
+    \caption{K-Nearest Neighbors algorithm}
+    \label{fig:knn}
+\end{figure}
+
+\[\textrm{expected test-MSE} = E[Y-g(x_0))^2]=Var(Y)+(E(Y)-g(x_0))^2=Var(\epsilon)+(f(x_0)-g(x_0))^2\].
+\[Var(X)=E(X^2)-E(X)^2\]
+\[E(X^2)=Var(X)+E(X)^2\]
+\[E((Y-g(x_0))^2)=Var(Y-g(x_0))+E(Y-g(x_0))^2=\]
+\[=Var(Y)+(E(Y)-g(x_0))^2=Var(\epsilon)+(E(Y)-g(x_0))^2\].\vspace{2mm}
+Waarbij $g^*(x_0)$ is het minimum en wordt gegeven door $g^*(x_0)=f(x_0)=E(Y|X=x_0)$.\vspace{2mm}\\
+$Var(g(x_0))$ is 0, want is een vaste waarde en $E(g(x_0))=g(x_0)$ want verwachtingswaarde van vaste waarde is de vaste waarde.\\
+$g(x_0)=E(Y|X=x_0)$ geeft bijvoorbeeld voor iemand van 80kg een gemiddelde van de $k$ mensen die het dicht bij de 80kg liggen, dus KNN benadering.
+
+\subsection{Foutmaten}
+Regressie:
+\begin{itemize}
+    \item MSE (mean squared error)
+    \item MAE (mean absolute error): de optimale $f(X)$ gegeven worden door de voorwaardelijke mediaan van Y gegeven X. 
+\end{itemize}
+\noindent Classificatie:
+\begin{itemize}
+    \item Accuracy
+    \item Bayes classifier
+\end{itemize}
+\subsubsection{Accuracy}
+Train error rate$=\frac{1}{n}\sum\limits_{i=1}^nI(y_i\neq\hat{y}_i)$
+met:
+\[I(y_i\neq\hat{y}_i)=\begin{cases}
+    1, & \text{if }\hspace{2mm} y_i\neq\hat{y}_i\\
+    0, & \text{if}\hspace{3mm} y_i=\hat{y}_i
+\end{cases}\]
+
+\subsubsection{Bayes classifier}
+De functie $f^*(x_0)$ met laagste test error rate is de Bayes classifier gegeven door:
+$f^*(x_0)=C_j$ met $P(Y=C_j|X=x_0)=max_i(P(Y=C_i|X=x_0))$. De klasse $C_i$ met de hoogste kans ($max_i(P(Y=C_i|X=x_0))$) als $x_0$ gegeven, wordt klasse $C_j$ de uitkomst van de optimale functie $f^*(x_0)$.\\
+
+\subsection{Verschil lineaire regressie en KNN-regressie}
+\noindent $f(x)=E(y|x)$ is lineaire regressie aanname. KNN probeert $E(y|x)$ zonder aannames te schatten door omringende waarden te analyseren. Stel data hangt lineair samen, kan je $f(x)=E(y|x)$ wel aannemen. Meer datapunten nodig voor KNN tov van lineaire regressie om zekerder te zijn dat er minder fouten op de testdata voorkomen. Het aantal waarnemingen dat je nodig hebt, hoe groter de functieruimte is. Minder waarnemingen, minder flexibel model. Overweging tussen lineaire regressie en KNN hangt af van overfitting. KNN heeft mogelijkheid tot overfitting waar lineaire regressie dat niet heeft.\\
+
+\section{Lineaire regressie}
+\[Y=\beta_0+\beta_1X_1+\beta_2X_2+...+\beta_pX_p+\epsilon\]
+Lineaire regressie slaat niet op de macht van $X$, maar op de $\beta$. Want $X$ en $Y$ zijn gegeven. In termen van de coëfficiënten is de vergelijking lineair. Dus onderstaande vergelijking is ook lineair:
+\[Y=\beta_0+\beta_1X_1+\epsilon\]
+\noindent Eigenschappen van $\hat{\beta}_j$:
+\begin{itemize}
+    \item schatters $\hat{\beta}_j$ zijn zuiver: $E(\hat{\beta}_j)=\beta_j$
+    \item de verdeling van de schatters is bekend
+\end{itemize}
+95\% betrouwbaarheidsinterval: als je oneindig keer steekproef doet valt $\hat{Y}$ in 95\% van de gevallen in $Y$.\\
+\begin{multicols}{2}
+
+\noindent Voordelen lineaire regressie:
+\begin{itemize}
+    \item Hoge interpreteerbaarheid
+    \item Bij beperkt aantal waarnemingen goed bruikbaar
+    \item Grote storingen goed bruikbaar
+    \item Bij sparse data goed bruikbaar
+    \item Door gebruik te maken van transformaties toch redelijk flexibel
+\end{itemize}
+
+
+\noindent Wat kan er misgaan?
+\begin{itemize}
+    \item $Y$ hangt niet lineair van $X_1, X_2,...,X_p$ af
+    \item Correlatie tussen storingstermen
+    \item Niet-constante variantie van de storingen
+    \item Uitschieters
+    \item Punten met veel invloed
+    \item Collineaire variabelen
+   % \item te weinig waarnemingen
+\end{itemize}
+\end{multicols}
+\noindent Vuistregel Robert: 'Aantal parameters mag niet zelfde orde van grote hebben als het aantal waarnemingen. Ten minste 10x zo veel waarnemingen voor een goede voorspelling. Als die waarnemingen niet aanwezig zijn kan ridge-regressie gebruikt worden om een goede voorspelling (i.e. variantie verlagen) te genereren.'
+
+\section{Regularisatie}
+\subsection{Ridge-regressie}
+Laat de $n$ waarnemingen van de train-data gegeven zijn door
+\[(x_{i1},x_{i2},...,x_{ip},y_i), \textrm{ met } i \in {1,2...,n}\]
+Dan wordt de foutmaat in ridge-regressie gegeven door 
+\[\textrm{ridge-fout}=\sum\limits_{i=1}^n(y_i-\beta_0-\sum\limits_{j=1}^p\beta_jX_{ij})^2+\lambda\sum\limits_{j=1}^p\beta_j^2\]
+met $\lambda$ een waarde die de tuning-parameter wordt genoemd. Bij kleine $\lambda$ mag beta-schijf groter en bij grote $\lambda$ ben je streng en mag beta-schijf niet groter. Ridge-regressie maakt gebruik van $l_2$-regularisatie ($\beta_1^2+\beta_2^2<1$).Kleinere coëfficiënten impliceert eenvoudigere functies om overfitting tegen te gaan. Door middel van \textbf{cross-validatie} kan je de $\lambda$ bepalen. Een juiste $\lambda$ zal ervoor kunnen zorgen dat de variantie meer daalt dan de onzuiverheid toeneemt, waardoor de test-MSE kleiner wordt.\\
+
+\subsection{Lasso-regressie}
+Lasso: least absolute shrinkage and selection operator
+\[\textrm{lasso-fout}=\sum\limits_{i=1}^n(y_i-\beta_0-\sum\limits_{j=1}^p\beta_jX_{ij})^2+\lambda\sum\limits_{j=1}^p|\beta_j|\]
+In plaats van de $l_2$-penalty van ridge-regressie, maakt lasso-regressie gebruik van de $l_1$-penalty ($|\beta_1|+|\beta_2|<2$). $\beta_0$ bestraf je niet en zit dus niet in de fouten.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Images/regularization.jpg}
+    \caption{$l_2$-regularisatie (links) en $l_1$-regularisatie (rechts)}
+    \label{fig:regularisatie}
+\end{figure}
+
+\noindent Kleine $\lambda$: kleinste kwadraten methode\\
+Grote $\lambda$: niet ver zoeken, dicht bij oorsprong blijven\\
+Gebruik CV om om $\lambda$ te zoeken om de ruimte te bepalen.
+}
