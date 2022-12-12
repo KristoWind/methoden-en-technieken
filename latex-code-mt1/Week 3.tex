@@ -1,0 +1,91 @@
+{\large
+\textbf{{\LARGE Week 3}}\\
+Aandachtspunten:
+\begin{itemize}
+    \item classificatie: foutmaat voor een kansmodel
+    \item Maximum likelihood estimator (MLE)
+    \item Lineaire discriminantanalyse (LDA) en principal component analyse (PCA)
+\end{itemize}
+\section{Classificatie: foutmaat voor een kansmodel}
+informatie-entropy (loss functie):
+\[\textrm{logistic loss}=-\sum\limits_{i=1}^n(y_i)ln(\hat{y_i})+(1-Y_i)ln(1-\hat{y_i})\]
+\[(y_i)ln(\hat{y_i})+(1-Y_i)ln(1-\hat{y_i})=\begin{cases}
+    ln(1-\hat{y_i}), & \text{if }\hspace{2mm} y_i=0\\
+    ln\hat{y_i}, & \text{if}\hspace{3mm} y_i=1
+\end{cases}\]
+Logistische regressie:
+\[ln(\frac{\hat{y}}{1-\hat{y}})=\hat{\beta}_0+\hat{\beta}_1x\]
+sigmoid-activatiefunctie (i.e. sigma-transformatie) differentieert makkelijk. SGD afname is makkelijk te berekenen:
+\[\frac{e^x}{1+e^x}=\sigma(x)\]
+\[\sigma'(x)=\sigma(x)(1-\sigma(x))\]
+Least squared gebruiken we niet, omdat gemiddelde gekwadrateerde fout geen realistische schatters geven. Willen foutmaat kiezen zodat we schatters krijgen die zich netjes gedragen en met het probleem te maken hebben. Voor regressie is LS wel goede schatter.\\
+
+% data\xrightarrow{schatting \hat{\beta}_0, \hat{\beta}_1}\xrightarrow{kans dat je data ziet} \textrm{kans dat je data ziet}\xrightarrow{vind \hat{\beta}_0, \hat{\beta}_1 zodat kans maximaal is}
+
+\section{Maximum likelihood estimator}
+\noindent Maximum likelihood bij logistische regressie:
+\[P(Y|X=x)=P(Y=1|X=x)^Y(1-P(Y=1|X=x))^{1-Y}\]
+MVUE: Minimale variantie voor zuivere schatter
+
+\noindent Logistische regressie is een uitbreiding van sigmoid met meerdere voorspellende variabelen:\\
+\[\hat{y}(x_1,x_2,...,x_p)=\frac{e^{\hat{\beta}_0+\sum\limits_{i=1}^p\hat{\beta}_ix_i}}{1+e^{\hat{\beta}_0+\sum\limits_{i=1}^p\hat{\beta}_ix_i}}\]
+
+\noindent Logistische regressie voor meer klassen (softmax):\\
+\[ln(\frac{P(Y=C_1|X=x)}{P(Y=C_k|X=x)})=\beta_{10}+\beta_1x\]
+\[ln(\frac{P(Y=C_2|X=x)}{P(Y=C_k|X=x)})=\beta_{20}+\beta_2x\]
+
+\section{LDA}
+In de situatie dat Y uit meer klasses $K > 2$ bestaat en dat er
+meer ($p > 1$) voorspellende variabelen zijn, maken we een
+vergelijkbare aanname. Namelijk dat, gegeven de klasse k voor
+Y, de voorspellende variabelen een \textbf{multivariate normale
+verdeling} volgen met een covariantiematrix die onafhankelijk
+is van de klasse k.\\
+Ook nu zal de klasse bepaald worden door
+discriminantfuncties die lineair zijn in de p voorspellende
+variabelen.\\
+
+\noindent LDA met $p=1$:\\
+Stel dat Y een lineaire variabele is die we willen schatten middels een continue X. Neem aan dat voor gegeven klasse $k \in {0, 1} \textrm{ van } Y$,
+\[X \sim N(\mu_k,\sigma^2)\]
+Als we P(Y) weten, kunnen we via de stelling van Bayes P(Y|X) uitrekenen.\\
+
+\noindent Als men aanneemt dat de covariantiematrix van de verdeling van de voorspellende variabelen voor elke klasse k van Y verschillend mag zijn, dan worden de discriminantfuncties kwadratisch (quadratic discriminant analysis).\\
+LDA is dus een speciaal geval van QDA.\\
+QDA ten opzichte van LDA heeft voordelen (het is immers algemener) en nadelen (het is immers algemener).\\
+
+\noindent Er ontstaat een kwadratisch probleem als variantie van twee klassen dermate verschilt (zie foto). Als nog meer variabelen worden toegevoegd, welke mogelijk gecorreleerd zijn (diagonaalmatrix naar $\frac{1}{Cov(X_1,X_2)}$ etc. op de plekken van de 0), functieruimte wordt veel groter (grotere vrijheidsgraden). Model flexibeler maken? Dus PCA gebruiken (demensiereductie en haalt correlaties weg tussen data).\\
+
+\section{PCA}
+$PC_1$ sla je dicht op de langste richting, op hoek van 90 graden maak je $PC_2$ (matrix diagonaliseren, programma vind een rotatie). Zodoende vallen de correlaties weg. \\
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/pca.png}
+    \caption{Principal component analysis}
+    \label{fig:pca}
+\end{figure}
+\noindent $PC_1$ beschikt over 90\% van de variantie, dus andere PCAs zijn ruis. 
+
+\noindent Foto’s zijn eigenlijk zeer hoog dimensionale waarnemingen. Een PCA uitgevoerd op een dataset van foto's van gezichten word ook wel Eigenfaces genoemd.\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Images/pca1.png}
+    \caption{PCA's van gezichten}
+    \label{fig:pca1}
+\end{figure}
+
+\noindent Het idee is dat iedere foto geschreven kan worden als een lineaire combinatie van Eigenfaces:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Images/pc2.png}
+    \caption{PCA samenhang op een gezicht}
+    \label{fig:pca2}
+\end{figure}
+
+\subsection{PCR}
+Principal components regression (PCR) of hoofdcomponenten-regressie bestaat uit een regressie-analyse op de eerste M hoofdcomponenten. De aanname van PCR is dat de richtingen waarin de voorspellende variabelen het meest variëren ook de richting zijn die het meest de variatie van Y kunnen verklaren.\\
+
+\noindent Eerst PCA uitvoeren (als correlatie), een aantal PC's waar je regressieanalyse op uitvoert. Dus niet regressie op $X_1$ en $X_2$, maar op $PC_1$ en $PC_2$.\\
+
+}
