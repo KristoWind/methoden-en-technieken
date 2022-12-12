@@ -1,0 +1,32 @@
+{\large
+\textbf{{\LARGE Week 3}}\\
+Het genereren van een rij middels een model met conditional data noemen we \textit{sampling}. De strategieen voor sampling zijn:
+\begin{itemize}
+    \item \textbf{Greedy sampling}.\\
+    Kies steeds het wordt met de hoogste kans. Nadeel: herhalingen en voorspelbare zinnen die niet echt lijken.
+    \item \textbf{Stochastic sampling}.\\
+    Kies een woord middels een kansproces.
+    \begin{itemize}
+        \item uniforme verdeling (elk symbool even veel kans)
+        \item de verdeling van het model
+    \end{itemize}
+    Nadeel: hoe weten we welk kansproces geschikt is voor het probleem?
+\end{itemize}
+\subsection{Toevoegen van temperatuur}
+Temperatuur $T$: hyperparameter om de hoeveelheid stochasticiteit in het kansproces te beheersen. Als het model de kans op een symbool inschat met $P(\textrm{symbool}|X)=C_{norm}P(\textrm{symbool}|X)^{\frac{1}{T}$
+\begin{itemize}
+    \item Hoe lager $T$ hoe kleiner de variatie
+    \item Hoe hoger $T$ hoe groter de variatie
+\end{itemize}
+Enkele overwegingen:
+\begin{itemize}
+    \item Resultaten worden beter met meer data en grotere modellen.
+    \item GPT-3: gestapelde transformer decoders op een enorme dataset.
+    \item Een taalmodel gebruikt de statistische structuur van de teksten die het gevoerd krijgt.
+\end{itemize}
+
+
+
+
+
+}
