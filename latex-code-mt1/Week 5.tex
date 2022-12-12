@@ -1,0 +1,209 @@
+{\large
+\textbf{{\LARGE Week 5}}\\
+Aandachtspunten:
+\begin{itemize}
+    \item Beslisbomen regressie
+    \item Beslisbomen classificatie
+    \item Ensemble-technieken
+\end{itemize}
+
+\section{Beslisbomen regressie}\\
+De foutmaat voor regressie met een beslisboom zal dan
+gegeven worden door
+\[RSS=\sum\limits_{j-1}^J\sum\limits_{i\in R_j}(y_i-\hat{y}_{R_j})^2\]
+Het doel van een beslisboom voor regressie zal zijn de J niet
+overlappende regio’s $R_1, R_2,... , R_J$ te vinden zo dat RSS
+geminimaliseerd wordt.
+
+\subsection{Het algoritme}
+\begin{enumerate}
+    \item Kies de variabele $X_j$ en de waarde $s$ zo dat de regio's 
+    \[\{X|X_j<s\} \textrm{ en } \{X|X_j\geq s\}\]
+    de RSS minimaliseren.
+    \item Kies één van bovenstaande regio’s en herhaal
+bovenstaande stap. De regio, variabele en waarde wordt
+zo gekozen dat het de RSS minimaliseert.
+    \item Herhaal bovenstaande stap tot een stop-criterium wordt
+bereikt. Bijvoorbeeld: geen enkele regio heeft meer dan
+vijf trainpunten.
+\end{enumerate}
+
+\subsubsection{Keuze voor algoritme}\\
+\noindent Dit algoritme zorgt voor rechthoekige gebieden.\\
+
+\noindent Dit is een voorbeeld van een \textit{greedy} algoritme. (greedy algoritme kijkt maar 1 stap vooruit, dat hoeft niet beter te zijn. Om op te lossen: pruning/snoeien)\\
+
+\noindent De bomen die hier uit volgen kunnen behoorlijk complex zijn
+(erg veel gebieden).\\
+
+\noindent We zouden als stop-criterium kunnen gebruiken dat elke stap
+de RSS met minstens een bepaalde waarde verlaagd. Een
+nadeel van deze methode is dat dit weer te rigide is. Er zou
+een zeer goede stap, na een vrij slechte stap kunnen komen.\\
+
+Om overfitting tegen te gaan, kunnen we een deelboom van
+de oorspronkelijke boom gebruiken (snoeien, pruning).\\
+
+\noindent We zouden die deelboom willen kiezen die de test-RSS
+minimaliseert. Cross-validation op alle deelbomen is niet altijd
+mogelijk.\\
+
+\noindent Gebruik om te snoeien de volgende fout-maat
+\[\textrm{cost-complexity-maat}=\sum\limits_{m=1}^{|T|}\sum\limits_{x_i\in R_m}(y_i-\hat{y}_{R_m})^2+\alpha|T|\]
+waar $|T|$ staat voor het aantal eindpunten van de boom $T$.\\
+
+\subsection{Cost complexity pruning (weakest link pruning)}
+\begin{enumerate}
+    \item Recursive binary splitting met stopcriterium op de traindata: volledige boom
+    \item Cost complexity pruning op de boom uit de vorige stap: rij van deelbomen afhankelijk van $\alpha$
+    \item $\alpha$ bepaald je met cross-validatie met gemiddelde RSS. Voor elke $k \in \{1,2,..,.K\}$
+    \begin{enumerate}
+        \item Herhaal stap 1 en 2 op de nieuwe traindata
+        \item Bepaal de RSS op de validatieset als functie van $\alpha$
+    \end{enumerate}
+    De deelboom uit 2 met $\alpha$ uit 3
+\end{enumerate}
+
+\section{Beslisbomen classificatie}\\
+Ook nu verdelen we de ruimte van voorspellende variabelen in $J$ niet overlappende regio's $R_1,R_2,...,R_J$.\\
+
+\noindent Stel dat een datapunt ($x_1,x_2,...,x_p$) in regio $R_j$ valt, dan zal de voorspelling bij een beslisboom voor classificatie gegeven worden door:
+\[\hat{y}(x_1,x_2,...,x_p)=\hat{y}_{R_j}\]
+waar $\hat{y}_{R_j}$ staat voor de klasse waar de meeste $y_i\in R_j$ vallen.\\
+
+\noindent De foutmaten voor een classificatie beslisboom worden gegeven door twee maten. Het is gebruikelijk om de Gini-index of de entropie te gebruiken om de ruimte te splitsen. Dit zal zorgen voor regio’s met hoge en lage fracties:
+\[\textrm{Gini index}= \sum\limits_{k=1}^K\hat{p}_{mk}(1-\hat{p}_{mk})\]
+\[\textrm{entropy}=\sum\limits_{k=1}^K\hat{p}_{mk}log(\hat{p}_{mk})\]
+waarbij $\hat{p}_{mk}$ de fractie van traindata in regio $R_m$ van klasse $k$ zijn.\\
+
+\noindent Daarnaast is het gebruikelijk om de error-rate te gebruiken als de accuraatheid van belang is voor het snoeien van de boom:
+\[\textrm{error-rate}=1-max\limits_{k}(\hat{p}_{mk})\]
+
+\section{Ensemble-technieken}\\
+Beslisbomen hebben een hoge variantie, door traindata aan te passen ontstaat meteen een hele andere boom. Bij ensemble methoden neem je het gemiddelde van uitkomsten van meerdere simpele modellen.\\
+\[Var(x)=\sigma^2 \rightarrow Var(\Bar{x})=\frac{\sigma^2}{n}\]
+Des te hoger $n$, des te lager je variantie. Door ieder model een andere steekproef te geven verhoog je n en zo verlaag je de variantie.\\
+
+\noindent Moet je zorgen dat de modellen onafhankelijk zijn $\rightarrow$ ieder model eigen steekproef. Anders dan $k$-fold omdat je modellen daar niet onafhankelijk zijn.\\
+
+\noindent De simpele modellen die je middelt noem je 'weak learners'. Die hebben misschien een hoge bias, maar die middel je weg.
+\begin{itemize}
+    \item weak learner is iets beter dan een naïef-nul-model
+    \begin{itemize}
+        \item die voorspelt altijd gemiddeld $y$ of random gok bij binaire classificatie.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Bagging (regressie)}
+\begin{itemize}
+    \item Bootstrap aggregation
+    \begin{itemize}
+        \item Bij bootstrap pak je $B$ voorbeelden zonder terugleggen, zo maak je steekproeven en zeg je iets over de variantie.
+    \end{itemize}
+    \item Bagging
+    \begin{itemize}
+        \item trek B steekproeven en zoek voor elke $k \in B$ een model
+    \end{itemize}
+\end{itemize}
+Laat $f^{*b}(x)$ het model zijn uit steekproef b, dan geldt voor regressie:
+\[\hat{f}_{bag}(x)=\frac{1}{B}\sum\limits_{i-1}^Bf^{*b}(x)\]
+Voor classificatie geldt: meeste stemmen gelden.\\
+
+\noindent Een waarneming die niet in de steekproef $b$ zit noemen we out-of-bag. Deze data gebruik je om te testen. Dus om f(2) OOB te testen, gebruik ik 1 en 3, want voor hun is 2 de geschikte testdata.\\
+\begin{table}[h]
+    \centering
+    \begin{tabular}{c|c|c}
+         b & b \{1,2,3\} & OOB \\ \hline
+         1 & 1, 1, 1 & 2, 3\\
+         2 & 3, 2, 3 & 1\\
+         3 & 1, 3, 3 & 2 \\
+    \end{tabular}
+    \caption*{}
+    \label{tab:my_label}
+\end{table}
+\noindent
+Als $b$ groot genoeg is, is de OOB-fout gelijk aan de LOOCV-fout. Bagging is nauwkeuriger maar minder interpreteerbaar.\\
+
+\subsection{Random forest}
+\noindent Random forest wordt gemaakt uit bagged bomen, waarbij elke boom een gelimiteerd aantal features heeft met $m<p$. Bij random forest is het error landschap onbekend, je zoekt naar een minimum, maar de kans is groot dat je een lokaal minimum vindt. Als er een sterke voorspeller is $q\in p$ dan begint elke boom het zelfde en is er correlatie in modellen. Want een boom is greedy. Zo blijf je hangen in het lokale minimum. Door andere variabelen de-correleer je. $m$ is de tuning parameter. Je geeft zo flexibiliteit om van A naar B te hupsen (waarbij A een lokaal minimum is en B het echte minimum).\\
+
+\noindent $m$ bepaal je met OOB-error (out-of-bag). De OOB-voorspelling zal een goede maat kunnen zijn voor een test-voorspelling. De OOB-error is de foutmaat volgend uit de OOB-voorspellingen en is een geldige schatting van de test-error op het bagged model. Als $B$ groot genoeg is, is de ))B-error equivalent met de LOOCV-fout. Er zijn vuistregels en deze zijn zelf te tunen. Bij sterk gecorreleerde waarden moet $m$ klein zijn.\\
+\begin{itemize}
+    \item Regressie: $m=\lfloor \sqrt{p}\rfloor$ 
+    \item Classificatie:  $m=\lfloor \frac{p}{3}\rfloor$ 
+\end{itemize}
+Hoe groot moet $B$ zijn in bagging?\\
+Een hogere $B$ zorgt niet voor overfitting, maar kost alleen tijd. Plot ))B-error en kies $B$ waar die stabiliseert. Standaard is 100 of 500. Random forests worden niet gebruikt voor computer vision.\\
+
+\subsection{Boosting}
+\subsubsection{Het idee:}
+\begin{enumerate}
+    \item we gebruiken eenvoudige modellen (beslisboom met $d$ beslissingen).
+    \item We fitten een ander model op storingen van het vorige model.
+    \item Het nieuwe model wordt dan het vorige model plus het andere model (maal $\lambda$).
+    \item Dit doen we $B$ keer en we middelen over alle uiteindelijke $B$ modellen.
+\end{enumerate}
+
+\subsubsection{Het algoritme}
+\begin{enumerate}
+    \item Laat $\hat{f}(x)=0$ en $r_i=y_i$ voor alle $x_i$ in trainset
+    \item Voor $b \in \{1,2,...,B\}$ herhaal
+    \begin{enumerate}
+        \item Fit een boom $\hat{f}^b$ met $d$ beslissingen op de trainset $(X,r)$
+        \item Update de voorspelling:
+        \[\hat{f}(x) \leftarrow \hat{f}(x)+ \lambda\hat{f}^b(x) \]
+        \item Update de storing:
+        \[r_i \leftarrow r_i-\lambda\hat{f}^b(x_i)\]
+    \end{enumerate}
+    \item Boosted model:
+    \[\hat{f}(x)=\sum\limits_{b=1}^B\lambda\hat{f}^b(x)\]
+\end{enumerate}
+
+\subsubsection{De tuning parameters}
+\begin{enumerate}
+    \item Het aantal bomen $B$. Boosting kan overfitten als $B$ te groot is: cross-validation.
+    \item Shrinkage parameter $\lambda$ (klein en positief). Vuistregel: 0,01 of 0,001.
+    \item Het aantal beslissingen $d$. Dit bepaalt de complexiteit. Meestal $d=1$, een $d$ van ongeveer 5 werkt meestal even goed als $d$ uit cross-validation
+\end{enumerate}
+
+\subsection{Bayesian Additive Regression Tree (BART)}\\
+\noindent Een BART-model maakt gebruik van een bagging (middelen over bomen die op andere steekproeven dan de dataset gefit) en boosting (middelen bomen die fitten op de fout van vorige boom) idee:
+\begin{itemize}
+    \item Elke boom is willekeurig
+    \item Elke boom bouwt op de storing van de vorige 
+\end{itemize}
+
+\subsubsection{Het idee}
+\begin{enumerate}
+    \item Zodra we voor gegeven iteratie $b$ en gegeven boom $k$ de partiële storing hebben berekend, fitten we een nieuwe boom ($\hat{f}_k^b$) op de data ($X,r)$.
+    \item We eisen dat de nieuwe boom een perturbatie (nieuwe takken snoeien en uitkomst wijzigen) van de oude boom uit de vorige iteratie zal zijn.
+\end{enumerate}
+
+\subsubsection{De notatie}
+\begin{itemize}
+    \item $K$: het aantal bomen
+    \item $B$: het aantal iteraties
+    \item $\hat{f}_k^b(x)$: de voorspelling van de k-de boom in de b-de iteratie
+\end{itemize}
+Na elke iteratie zullen de $K$ bomen worden opgeteld
+\[\hat{f}_k^b(x), \textrm{ voor } b \in \{1,2,...,B\}\]
+Per iteratie zullen de $K$ bomen 1 voor 1 worden aangepast door gebruik te maken van een partiële storing
+\[r_i=y_i-\sum\limits_{k'<k}\hat{f}_k'^b(x_i)-\sum\limits_{k'>k}\hat{f}_k'^b-1(x_i)\]
+
+\subsubsection{Het algoritme}
+\begin{enumerate}
+    \item Laat $\hat{f}_1^1(x)=\hat{f}_2^1(x)=...=\hat{f}_K^1(x)=\frac{1}{nK}\sum\limits_{i=1}^ny_i$
+    \item Bereken $\hat{f}^1(x)=\sum\limits_{k=1}^K\hat{f}_K^1(x)=\frac{1}{n}\sum\limits_{i=1}^ny_i$
+    \item Voor elke $b \in \{2,3,...,B\}$
+    \begin{enumerate}
+        \item Voor elke $k \in \{1,2,...,K\}$
+        \begin{enumerate}
+            \item Bereken voor $i \in \{1,...,n\}$ de huidige partiële storing $r_i$
+            \item Fit een nieuwe boom $\hat{f}_k^b(x)$ op $r_i$ door de $k$-de boom uit de vorige iteratie $\hat{f}_k^b-1(x)$ willekeurig te veranderen.
+        \end{enumerate}
+        \item Berekenen $\hat{f}^b(x)=\sum\limits_{k=1}^K\hat{f}_k^b(x)$
+    \end{enumerate}
+    \item Bereken het gemiddelde na $L$ trekkingen (burn-in period):
+    \[\hat{f}(x)=\frac{1}{B-L}\sum\limits_{b=L+1}^B\hat{f}^b(x)\]
+\end{enumerate}
+}
