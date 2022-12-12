@@ -1,0 +1,119 @@
+{\large
+\textbf{{\LARGE Week 6}}\\
+Aandachtspunten:
+\begin{itemize}
+    \item Support Vector Classifier
+    \item Support Vector Machine
+\end{itemize}
+
+\section{Support Vector Classifiers}
+De support vector classifier of soft margin classifier is een
+generalisatie van het optimaal scheidend hypervlak.
+De generalisatie bestaat uit het toelaten van
+verkeerd-geclassificeerde traindata ten koste van een “straf”.
+Hiermee is het mogelijk om de support vector classifier te
+gebruiken bij data waarvan de klasses niet perfect te scheiden
+zijn door een hypervlak.
+Ook bij data waar de klasses wel perfect te scheiden zijn met
+een hypervlak, zou een support vector classifier betere
+(breedte van marge) resultaten kunnen geven.
+
+\begin{itemize}
+    \item Bij binaire classificatie zoek je een hypervlak die klassen van elkaar scheiden (seperating hyperplane). 
+    \item Voor hetzelfde probleem kunnen meerdere hypervlakken bestaan, oneindig veel.
+    \item We zoeken de maximal margin classifier. Zoek de kortste afstand tussen punt en vlak, die afstand maximaliseren we.
+    \item In praktijk zoeken we een lijn precies tussen de 2 klassen. De punten het dichtst bij noemen we de \textit{support vectors}. Als die veranderen, verandert het hele hypervlak.
+    \item Meer support vectors geeft meer variantie, maar minder bias, je kan inzien welke datapunten de SV's zijn.
+\end{itemize}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/svc.png}
+    \caption{Support Vector Classifier (SVC)}
+    \label{fig:pca}
+\end{figure}
+
+\section{Support Vector Machines}
+Support Vector Machines (SVM) zijn een generalisatie van support vector classifier (SVC).\\
+
+\textbf{Optimaal scheidende kromme}\\
+Een niet-lineair vlak om klasses te scheiden. ($x_0$: testdata en $x_i$: support vectors, $h(x_i)$: transformatie op de support vectors).\\
+
+\noindent We zouden kunnen vermoeden dat met twee voorspellende variabelen ($X_1$ en $X_2$) de klasses gescheiden worden door
+\[\beta_0+\beta_1X_1+\beta_2X_2=0 \textrm{ (een parabool)}.\]
+Dit is een lineaire lijn in de nieuwe variabelen
+\[h(x_i)=h(x_{i1},x_{i2})=
+\begin{pmatrix}
+h_1(x_{i1},x_{i2})\\
+h_2(x_{i1},x_{i2})
+\end{pmatrix}=
+\begin{pmatrix}
+x_{i1}^2\\
+x_{i2}
+\end{pmatrix}
+\]
+Transpose van $\beta=\begin{pmatrix}
+\beta_1\\
+\beta_2
+\end{pmatrix}$:\[ \beta^T=\begin{pmatrix}
+\beta_1, \beta_2
+\end{pmatrix}\]
+\[\beta^TX_0=\begin{pmatrix}
+\beta_1, \beta_2
+\end{pmatrix}\begin{pmatrix}
+X_{01}\\
+X_{02}
+\end{pmatrix}=\beta_1X_{01}+\beta_2X_{02}\]
+
+\textbf{Kernel}\\
+Een kernel is een functie die de gelijkenis tussen twee punten meet. We definiëren \[K(x,x')=\langle h(x) \; , \; h(x') \rangle\] en noemen K een kernel.\\
+
+\textbf{"Een support vector machine is een SVC met een kernel $K$ die voor specifieke transformaties staan."}\\
+
+\noindent
+Twee standaard kernels zijn (1) polynomiale kernels met graad d en (2) radiaal (RBF).
+
+\[
+(1): K(x,x')=(1+\langle x \; , \; x' \rangle)^d
+\]
+\[
+(2): K(x,x')=exp)(-\gamma \langle x-x' \; , \; x-x' \rangle)
+\]
+
+\noindent
+Hoe kleiner de C, hoe minder marge om marge te overschrijden. De scheidende kromme kan dan zeer kronkelig zijn (te kronkelig = overfitting).
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/svk_kernels.png}
+    \caption{SVM kernels}
+    \label{fig:pca2}
+\end{figure}
+\newpage
+\noindent Bijdrage van punten die ver van marge liggen neem je niet mee, alleen punten meenemen die marge overschrijden. Deze maximalisatie methode noemen we de Hinge loss.
+\[
+\textrm{Hinge loss}=L(X,y,\beta)=\sum\limits_{i-1}^nmax(0,1-y_i(\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+...+\beta_px_{ip}
+\]
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Images/hingeloss.png}
+    \caption{Hinge loss (scharnier loss)}
+    \label{fig:hinge}
+\end{figure}
+\newpage
+\textbf{Classificatie op meer dan twee klasses $K$}
+\begin{itemize}
+    \item One-versus-one (all pairs):\\
+Maak voor elk paar van klasses $(k, k')$ een svm en kies voor
+een gegeven x0 de klasse die het vaakst wordt gekozen in
+de $\frac{1}{2} K(K-1)$ SVM’s.
+\item One-vs-all: \\Maak voor elke klasse k een SVM ($k$ tegen niet-$k$). Kies voor
+een gegeven $x_0$ die klasse k volgend uit een SVM waarbij
+$x_0$ het verst van het optimale hypervlak is. Als het datapunt op vlakken van meerdere klasses ligt, classificeer je het datapunt als de klasse waarvan de marge het verst van het datapunt afligt.
+\end{itemize}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Images/svmclassificationovo_ova.png}
+    \caption{One-vs-one classificatie (links) en one-vs-rest classificatie (rechts)}
+    \label{fig:svmclass}
+\end{figure}
+
+}
