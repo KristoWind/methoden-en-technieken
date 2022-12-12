@@ -1,0 +1,102 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{fancyhdr}
+\usepackage{amssymb}
+\usepackage{multicol}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+\title{Methoden & Technieken}
+\author{Kristo Wind}
+\date{September 2022}
+
+\geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=25mm,
+ bottom=20mm,
+ }
+\begin{document}
+
+\begin{titlepage}
+\newgeometry{left=3cm,bottom=1.5cm}
+    \begin{center}
+        \begin{minipage}{0.43\textwidth}
+        \rule{0.9\linewidth}{0mm}\\
+        \vspace{0.5cm}
+        \end{minipage}
+        
+        
+\vspace{1cm}
+        \rule{\linewidth}{2pt}
+        
+        \vspace{0.7em} 
+        {\LARGE \bfseries Methoden en Technieken: Supervised Machine Learning}
+         
+        
+        \rule{\linewidth}{2pt} \\
+        {\sc Hogeschool van Amsterdam  -  Master Applied Artificial Intelligence}\\
+    \vspace{8cm}
+     {\large \sc  \textit{\textbf{Kristo Wind}}}\vspace{4cm}
+
+   
+
+    \end{center}
+    
+    \vspace{3.3cm}
+    \begin{figure}[htb]
+        \centering
+        \includegraphics[width=0.15\linewidth]{Images/logo2.png}
+        \label{fig:hemoglobin3d}
+    \end{figure}
+    \begin{center}
+        \makeatletter
+        Amsterdam \\
+        November 2022
+        \makeatother
+    \end{center}
+\end{titlepage}
+
+\newpage
+\setcounter{page}{1}
+\pagestyle{plain}
+
+\pagestyle{fancy}
+\fancyhf{}
+\cfoot{\thepage}
+\fancyhead[L]{\leftmark}
+\renewcommand{\footrulewidth}{0.5pt}
+\rfoot{\includegraphics[width=4cm]{Images/HVA.png}}
+
+\input{Week 1.tex}
+\newpage
+\input{Week 2.tex}
+\newpage
+\
+\newpage
+\input{Week 3.tex}
+\newpage
+\input{Week 4.tex}
+\newpage
+\input{Week 5.tex}
+\newpage
+\input{Week 6.tex}
+\newpage
+\input{Week 8.tex}
+\newpage
+\
+\newpage
+\input{Week 9.tex}
+\end{document}
