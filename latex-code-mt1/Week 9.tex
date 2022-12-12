@@ -1,0 +1,168 @@
+{\large
+\textbf{{\LARGE Week 9}}
+\subsection{Convolutionele Neurale Netwerken}
+Beeldherkenningstaken:
+\begin{itemize}
+    \item Single-label classificatie
+    \item Multi-label classificatie (meerdere dingen tegelijk herkennen)
+    \item Segmentatie (classificatie op pixelniveau)
+    \begin{itemize}
+        \item Semantic
+        \item Instance
+    \end{itemize}
+    \item Object Detection
+\end{itemize}
+
+\textbf{Waarom dense layers niet werken bij beeldmateriaal}
+\begin{itemize}
+    \item Globaliteit -- iedere mogelijke combinatie van inputs zou een mogelijk signaal kunnen bevatten.
+    \item Deze signalen verschillen allemaal van elkaar.
+\end{itemize}
+Voor beeldmateriaal gelden de volgende aannames:
+\begin{itemize}
+    \item Lokaliteit -- Alleen combinaties van inputs met zijn buren bevatten zinvolle signalen.
+    \item Translatie-invariantie -- Deze signalen blijven hetzelfde als de input met de buren verplaatst.
+\end{itemize}
+Een convolutielaag is een dense layer waar merendeel van de gewichten uit zijn gezet. \textit{padding = 'same'} plaatst virtuele waarden aan rand die dezelfde waardes hebben als de pixels ernaast.
+
+\noindent Een aantal instellingen kunnen verder het aantal gewichten beïnvloeden:
+\begin{itemize}
+    \item Kernel size
+    \item Padding (vooral bij segmentatie, je wilt daar grootte behouden)
+    \item Stride (stapgrootte kernel size)
+    \item Pooling (max, global average, low pooling van de filtercombinatie)
+\end{itemize}
+Max pooling werkt beter dan het nemen van strides, maar verliest hiermee wel informatie over waar deze features zich bevinden (belangrijk voor segmentatie)\\
+
+\subsubsection{Typische architectuur}
+\begin{itemize}
+    \item Data augmentatie
+    \item Meerdere convolutie blokken
+    \begin{itemize}
+        \item Een of meer convolutielagen
+        \item Max pooling om het aantal gewichten laag te houden
+    \end{itemize}
+    \item Flatten
+    \item Een dense layer voor de uitvoer
+\end{itemize}
+\subsubsection{Transfer Learning}
+De enorme voorgetrainde netwerken kunnen redelijk algemene patronen herkennen die toepasbaar zijn op heel veel andere beeldtaken. Daarom kan het bij weinig data handig zijn om een model te pakken die bijvoorbeeld een ImageNet-competitie heeft gewonnen. Pak de convolutielagen van deze netwerken en vervang de dense layer en loss-functie. \\
+
+Werkwijze:
+\begin{enumerate}
+    \item Voeg eigen dense layer toe aan voorgetrainde basis
+    \item Bevries gewichten van voorgetrainde basis
+    \item Train je netwerk
+    \item Finetunen
+    \item Ontvries gewichten met de laatste lagen (met factor 10 lagere learning rate)
+    \item Opnieuw trainen
+\end{enumerate}
+
+\subsubsection{Transpose Convolutie}
+\begin{itemize}
+    \item Onze invoer bestaat uit $200\times 200$ pixel plaatjes.
+    \item We willen deze plaatjes segmenteren, ofwel we kennen een klasse toe aan iedere pixel
+    \item Onze uitvoer moet dus bestaan uit $200\times 200$ geclassificeerde pixels
+\end{itemize}
+Echter:
+\begin{itemize}
+    \item We nemen convoluties met een stride van 2
+    \item Dus na deze convolutie halveert onze resolutie
+    \item Uiteindelijk hebben we een $25 \times 25$ 'plaatje' met 256 features
+\end{itemize}
+Een transpose convolutie probeert te leren hoe deze convoluties weer ongedaan gemaakt moeten worden. De (200,200,\textbf{3}) van de invoer geeft het aantal kleurenchannels weer (RGB), terwijl de (200,200,\textbf{3}) van de uitvoer het aantal klasses weergeeft.
+
+\subsubsection{$1\times 1$ convoluties}
+Pixels worden halveert, aantal filters/features verdubbelen. Kan tot een convolutielaag met 1 pixel en heel veel filters. Deze convoluties worden soms gebruikt om het aantal features te veranderen zonder ruimtelijke informatie te veranderen. Ze zijn een voorbeeld van een Network-in-network laag.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\linewidth]{Images/convfilters.png}
+    \caption{$1\times 1$ convoluties}
+    \label{fig:filters}
+\end{figure}
+
+\subsubsection{Residual connecties}
+Pixels worden halveert, aantal filters/features verdubbelen. Dan ontstaan er hele diepe netwerken. Kan niet notatie 'model.add()' gebruiken, want lopen 2 dingen parallel aan elkaar. Doen zodat het nog goed blijft trainen.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Images/residualnetsdepth.png}
+    \caption{Residual netwerk}
+    \label{fig:filters}
+\end{figure}
+
+\noindent Het idee van residual connections is om de (gradient van de) fout dieper in het netwerk te laten propageren, zodat ook diepere lagen kunnen trainen. Dit doen we door de activatie van de diepere lagen bij nieuwe lagen op te tellen.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.25\linewidth]{Images/residuals.png}
+    \caption{Residual connectie}
+    \label{fig:filters}
+\end{figure}
+\begin{itemize}
+    \item De residual bevat een $1\times 1$ convolutie zonder activatie om te zorgen dat het aantal filters hetzelfde is als de uitvoer van het overgeslagen convolutieblok.
+    \item Convoluties in het convolutieblok moeten met padding werken om te zorgen dat de resolutie niet veranderd.
+    \item Als het convolutieblok gebruik maakt van pooling zal deze $1\times 1$ convolutie met strides moeten werken zodat de resolutie hetzelfde blijft.
+    \item Aan het eind wordt de residual connection bij de uitvoer van het convolutieblok opgeteld.
+\end{itemize}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Images/residualnetwork.png}
+    \caption{Code van een simpel residual netwerk}
+    \label{fig:filters}
+\end{figure}
+\newpage
+\subsubsection{Global Average Pooling}
+Convolutielaag (in plaats van dense en flatten layer) die evenveel filters als klasses heeft. Iedere filter komt overeen met iets dat je wilt herkennen. Gemiddelde van alle filters in de convolutielaag is de klasse die eruit komt. 
+
+\noindent Bij global average pooling wordt het gemiddelde van de hele filter genomen. De laatste convolutionele laag heeft even veel filters als er te voorspellen klassen zijn. Deze filters worden over de hele laag gemiddeld. \href{https://arxiv.org/pdf/1312.4400.pdf}{Bron}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Images/gap.png}
+    \caption{global average pooling}
+    \label{fig:filters}
+\end{figure}
+
+\subsubsection{Batch Normalisation}
+Batch normalisatie wordt gebruikt om het aantal parameters te verkleinen. De uitvoer van een convolutionele laag wordt voor de activatiefunctie genormaliseerd.
+\begin{itemize}
+    \item Gemiddelde 0
+    \item Variantie 1
+\end{itemize}
+Omdat de activatiefunctie het stekt veranderd bij nul per filter, is er nu geen bias nodig in de convolutionele laag.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/batchnorm.png}
+    \caption{Batch normalisatie}
+    \label{fig:filters}
+\end{figure}
+
+\subsubsection{Separabele convoluties}
+In een gewone convolutielaag worden alle filters samen genomen, wat voor veel parameters zorgt. Dus splitsen we de filters en pas je toe op de diepere lagen (niet kleuren maar kleine randjes).
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/batchnorm1.png}
+    \caption{Separabele convoluties}
+    \label{fig:filters}
+\end{figure}
+
+\subsubsection{Interpreteerbaarheid}
+In het algemeen word gezegd dat neurale netwerken black boxes zijn, het is niet echt duidelijk hoe ze tot hun voorspellingen komen. Echter, omdat CNN's visuele informatie verwerken is het hier mogelijk om toch redelijk veel inzicht te krijgen in hoe het model werkt.
+\begin{itemize}
+    \item Je kan de activatie van je filters plotten
+    \item Je kan achterhalen op welk patroon een filter maximaal reageert
+    \item Je kan achterhalen welke pixels in een afbeelding de sterkste invloed op de voorspelling hadden
+\end{itemize}
+
+\subsubsection{Gebruik pretrained model}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Images/xception.png}
+    \caption{Xception aanroepen}
+    \label{fig:filters}
+\end{figure}
+
+
+}
