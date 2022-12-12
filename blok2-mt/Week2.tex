@@ -1,0 +1,150 @@
+{\large
+\textbf{{\LARGE Week 2}}
+\section{NLP}
+Natuurlijke taal...
+\begin{itemize}
+    \item ...maakt gebruik van uitzonderingen
+    \item ...kan dubbelzinnig zijn
+    \item ...kan veranderen
+\end{itemize}
+
+\noindent Hoe wordt NLP gebruikt?
+\begin{itemize}
+    \item Classificatie: wat is het onderwerp van de tekst?
+    \item Contect filtering: Bevat deze tekst scheldwoorden of ander misbruik?
+    \item Sentiment analysis: is de tekst positief of negatief?
+    \item
+    \item
+    \item 
+\end{itemize}
+\subsection{Preprocessing}
+\subsubsection{Vectorizing tekst}
+\begin{itemize}
+    \item Standardize (vereenvoudigen van de tekst)
+    \item Tokenization (splitsen van symbolen waarmee je wilt werken)
+    \item Indexing (elke token krijgt een getal toegewezen)
+\end{itemize}
+
+\noindent \textbf{Standardize: vermijd overbodigheid (denk na of het invloed heeft/belangrijk is):}
+\begin{itemize}
+    \item 'Duits' en 'duits'
+    \item 'enquête' of 'enquete'
+    \item 'ik loop, omdat' en 'ik loop omdat'
+    \item 'hoe heet jij?' en 'hoe heet jij'
+    \item 'hij liep', 'hij loopt' en 'hij [lopen]' (stemming)
+\end{itemize}
+
+\noindent \textbf{Tokenization: Symbolen}
+\begin{itemize}
+    \item Woordniveau: splits op de spaties
+    \item N-gram: splits in groepen van Nopeenvolgende woorden
+    \item Karakterniveau: wordt niet vaak gebruikt bij text-generation
+\end{itemize}
+Bag-of-2-grams:\\
+\textbf{"ik ben blij" $\rightarrow$ \{"ik", "ben", "blij", "ik ben", "ben blij"\}}\\
+Een bag staat voor een multi-set (een verzameling met herhaling). Door middel van N-grams wordt er een heel lokale volgorde in het model ingevoerd. N-grams worden gebruikt bij niet-diepe modellen (vorm van feature engineering).\\
+
+\textbf{Indexing}\\
+Relateer een uniek geheel getal aan elk symbool uit de trainset (vocabulary, woordenlijst, symbolenlijst). Reserveer een index voor woorden die niet in de woordenlijjst voorkomen (out of vocabulary-index of OOV-index). Gebruik als index waarde 1. De 0 ...\\
+
+\noindent {\fontfamily{cmtt}\selectfont TextVectorization} werkt alleen op CPU en kan zowel in datapreparatie-stap als in model gedeclareerd worden. Als je GPU gebruikt, is het sneller als je het in de data-preparatie declareerd. Als je het ergens implementeerd, wil je liever een model leveren waar de data-preparatie al in zit.\\
+
+Stappenplan voor trainen:
+\begin{enumerate}
+    \item Dataset splitsen
+    \item Definieer nulmodel (bijv. altijd positief (50\% accuraatheid))
+    \item Kies de 20.000 meest voorkomende woorden voor in de woordenlijst.
+    \begin{itemize}
+        \item Met 1-grams: accuraatheid (validatieset) van 88\%.
+        \item Met 2-grams: accuraatheid (validatieset) van 89\%.
+        \item Met 2-grams en TF-IDF accuraatheid (validatieset) van 89\%.
+        \begin{itemize}
+            \item TF-IDF: Hoe vaker een woord voorkomt in een tekst hoe belangrijker, hoe meer teksten dat woord bevatten hoe minder belangrijk.
+        \end{itemize}
+    \end{itemize}
+    \item Opnieuw een woordenlijst van 20.000 woorden. Gebruik alleen eerste 600 woorden (en padding). 600 $\times$ 20.000 matrix, dus heel veel parameters met veel nulletjes.
+    \begin{itemize}
+        \item Accuraatheid (validatieset) van 87\% en 3 uur per epoch. 
+    \end{itemize}
+    \item Met eigen gedefinieerde word embedding (als genoeg data)
+    \begin{itemize}
+        \item Accuraatheid (validatieset) van 90\% en 7 minuten per epoch.
+    \end{itemize}
+    \item masking
+    \begin{itemize}
+        \item Accuraatheid (validatieset) van 90\% en 7 minuten per epoch.
+    \end{itemize}
+    \item Pretrained word embedding ({\fontfamily{cmtt}\selectfont word2vec}) 
+    \begin{itemize}
+        \item Accuraatheid (validatiesset) van 88\% en 4 minuten per epoch.
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Word embeddings}\\
+Word embeddings zijn vectorrepresentaties van woorden waar de semantische afstand tussen woorden overeenkomt met de meetkundige afstand van de vectoren. Dit maakt vectoren lager dimensionaal en minder ijl (minder sparse) vergeleken met one-hot-encoding. Typische voorbeelden van dimensies in een word embedding zijn 'geslacht' en 'meervoud'.
+\begin{itemize}
+    \item Begin met willekeurige vectoren in de inbedding en leer de juiste vectoren zoals je de gewichten van het netwerk leert
+    \item Maak gebruik van al bestaande embedding. Dit zijn pretrained embeddings.
+\end{itemize}
+
+\textbf{Padding en masking}\\
+\textit{Padding} is het eisen van een lengte van het aantal woorden. De informatie in het geheugen van de RNN zal verdwijnen als het aan het eind steeds nullen ziet. Een manier om dit tegen te gaan is \textit{masking}.\\
+
+\section{Attention \& Transformers}
+Sommige variabelen zullen we meer aandacht (attention) willen geven, omdat niet elk onderdeel even belangrijk is. Dit doen we door scores per variabele te berekenen.\\
+
+\noindent De scores die we per variabele geven kunnen context-afhankelijk zijn. De context bepaald namelijk soms de betekenis van het woord. De score van een symbool is afhankelijk van de symbolen eromheen.\\
+
+\textbf{Self-attention}\\
+Inproduct van een word-embedding (hoek van de woorden tov van elkaar). Geeft een projectie het wordt tov van de vectoren van de overige woorden.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/encoder_attention.png}
+    \caption{Self-attention (encoder)}
+    \label{fig:selfattention}
+\end{figure}
+
+\textbf{Idee achter de transformer}\\
+De transformer was van origine een vertaler. De encoder geeft het woord bank (in de zin:'Ik ga zitten op mijn bank') veel aandacht/attention, waardoor in de decoder niet \textit{bank} gekozen wordt, maar \textit{couch}.\\
+
+\textbf{Het query-key-value-model}\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Images/querykeyvalue.png}
+    \caption{Query-key-value}
+    \label{fig:qkv}
+\end{figure}
+
+\textbf{Full transformer encoder}\\
+De transformer maakt verder gebruik van sequences door elk woord een getal mee te geven om de plek in de zin aan te duiden. De code van de volledige transformer encoder ziet er als volgt uit.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/fullencodermodel.png}
+    \caption{Full transformer encoder (met sequence)}
+    \label{fig:fulltransformerencoder}
+\end{figure}
+
+\textbf{Bag-of-words vs. Sequence models}\\
+De vuistregel om een modeltype te kiezen op prestatie (accuracy) voor tekstclassificatie luidt:
+\[
+\frac{\textrm{aantal waarnemingen}}{\textrm{gemiddelde lengte van waarnemingen}}\begin{cases}
+<1500 \textrm{ bag-of-bigrams}\\
+>1500 \textrm{ sequence model}
+\end{cases}
+\]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
