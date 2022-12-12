@@ -1,0 +1,112 @@
+{\large
+\textbf{{\LARGE Week 1}}
+\section{Tijdreeksen}
+Een \textbf{tijdreeks} $X_t$ is een verzameling van waarnemingen, elk gedaan op een specifiek tijdstip $t$. De verzameling $T$ van tijdstippen zou continu kunnen zijn, maar wij zullen uitgaan van een discrete verzameling $T$. Sterker nog, we zullen uitgaan van tijdreeksen met waarnemingen op een vaste afstand van elkaar.\\
+
+Dit vak gaat over concentreren op het voorspellen van tijdreeksen. Andere doelen zijn:
+\begin{itemize}
+    \item \textbf{Classificatie}: ken 1 of meer nominale labels toe aan een tijdreeks. Aan de hand van het gedrag van een motor bepalen of het binnenkort zal uitvallen.
+    \item \textbf{Event detection}: specifiek signaal in een tijdreeks detecteren (hotword detection).
+    \item \textbf{Anomaly detection}: detecteren van ongebruikelijk gedrag. Maakt vaak gebruik van unsupervised learning.
+\end{itemize}
+
+\noindent Tijdreeksanalyse zonder machine learning:
+\begin{itemize}
+    \item Tijdreeksdecompositie
+    \item Exponential smoothing (Holt Winters)
+    \item S-ARIMA-modellen
+    \item Fouries-analyse
+    \item Dynamic regression
+\end{itemize}
+\noindent Deze technieken proberen de dynamiek van een systeem te begrijpen. Domeinkennis zal daarom waardevol zijn.\\
+
+\noindent Stappenplan:
+\begin{enumerate}
+    \item Data analyse
+    \item Splitsen (volgorde is essentieel (traindata is eerste stuk data, val volgende stuk en test laatste data))
+    \item Normaliseren traindata ($\mu$ en $\sigma$ van traindata)
+    \item Pas eenheden zo nodig aan op het vraagstuk (timeseries\_dataset\_from\_array())
+    \item Deze waarnemingen in batches verdelen en dat kan invoer zijn voor een neuraal netwerk
+    \item Maatstaf MAE. Als model beter scoort dan nulmodel is het al goed. (nulmodel bijvoorbeeld temperatuur morgen 12:10 is zelfde temperatuur als vandaag 12:10).
+\end{enumerate}
+\subsection{Wat voor neurale netwerk?}
+
+\subsubsection{Fully connected netwerk}
+MSE is beter om afgeleides mee te bepalen, dus als loss gebruiken. (plot $x^2$ en $|x|$ grafieken maar om te zien). MAE springt van negatieve afgeleide ineens naar positief. MSE gaat geleidelijk. RMSE heeft zelfde schaal als MAE, maar is niet hetzelfde. MAE is makkelijker te interpreteren. Zorg dus voor lossfuncties waarvan de afgeleides bekend zijn.\\
+
+\subsubsection{Conv1D netwerk}
+In plaats van een fully connected netwerk (die vaak niet een betere MAE dan nulmodel heeft), probeer model te helpen gerichter te zoeken, want alleen de data invoeren is vaak niet genoeg voor het netwerk. Data op een andere manier presenteren, zoals seizoenen, etc. Om dat te doen kunnen bijvoorbeeld Conv1D en MaxPooling toegevoegd worden, om relaties tussen datapunten te vinden en niet weg te gooien.\\
+
+\noindent Tijdreeks in niet translatie-invariant, hoewel er wel een dagelijkse cyclus is, zal die cyclus veranderen. Volgorde is ook van belang in een tijdreeks. De recente geschiedenis heeft meer invloed dan de verre geschiedenis. Daar wordt nu geen rekening mee gehouden. Fully connected en CNN modellen zijn feed forward netwerken (geen geheugen).\\
+
+\subsubsection{Recurrent netwerk}\\
+Recurrente netwerken met geheugen, uitvoer van vroeger kan je gebruiken als invoer van nu.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\linewidth]{Images/RNN.png}
+    \caption{Recurrent Neural Network}
+    \label{fig:my_label}
+\end{figure}
+
+\noindent Wat zou de uitvoer van een RNN moeten zijn? {\fontfamily{cmtt}\selectfont Keras} houdt rekening met beide opties: alle uitvoer of alleen de uitvoer van de laatste stap. Dit wordt bepaald met {\fontfamily{cmtt}\selectfont return\_sequences}. Als je {\fontfamily{cmtt}\selectfont SimpleRNN}-lagen witl stapelen wil je de gehele uitvoer hebben per tijdstap. Dan moet {\fontfamily{cmtt}\selectfont return\_sequences}={\fontfamily{qtm}\selectfont True} zijn. Het voordeel hiervan is dat je informatie uit enkele tijdstappen terug kan verkrijgen, maar het nadeel is dat je last hebt van een \textit{vanishing gradient}. Als alternatief kunnen LSTM en GRU modellen gebruikt worden. \\
+
+\textbf{Long Short-Term Memory (LSTM)}\\
+Een LSTM lijkt erg op een simpele RNN. Er is alleen iets toegevoegd: een \textit{carry} $c^t$.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\linewidth]{Images/LSTM.png}
+    \caption{Long Short-Term Memory}
+    \label{fig:my_label}
+\end{figure}
+
+\noindent De $c^t$ hangen af van de invoer $(t-1)$, uitvoer $(t-1)$ en $c^{t-1}$. Als activatie-functies kiest men sigmoid-functies. Een interpretatie is dat deze activaties als poorten werken. Een LSTM is een voorbeeld van een \textit{gated RNN}.
+
+\begin{itemize}
+    \item De werking van de gates wordt bepaald door de gewichten.
+    \item De gewichten worden gevonden middels een leerproces.
+    \item De specificatie van de cellen bepaalt de hypotheseruimte, maar wat cellen doen wordt bepaald door de gewichten.
+    \item De combinatie van de gates zou men moeten interpreteren als een voorwaarde op het zoeken (geen design).
+    \item De schrijver is ervan overtuigd dat optimalisatie-algoritmes dit beter kunnen dan mensen.
+\end{itemize}
+
+\noindent Wees ervan bewust wat de LSTM-cel doet:
+\begin{itemize}
+    \item Het kan informatie van een eerder tijdstip gebruiken op een later moment.
+    \item Bestrijdt daarmee het effect van de verdwijnende gradient (vanishing gradient).
+\end{itemize}
+
+\textbf{Dropout}\\
+In plaats van elke tijdstap willekeurig enkele eenheden weglaten, zou men elke tijdstap dezelfde willekeurige eenheden moeten weglaten. Dit kan op twee manieren:
+\begin{itemize}
+    \item {\fontfamily{cmtt}\selectfont dropout}: fractie om weg te laten van de invoer.
+    \item {\fontfamily{cmtt}\selectfont recurrent\_dropout}: fractie om weg te laten van de recurrente toestand.
+\end{itemize}
+{\fontfamily{cmtt}\selectfont Recurrent\_dropout} zit standaard verweven in de LSTM laag, waarbij {\fontfamily{cmtt}\selectfont dropout} een aparte laag is.\\
+
+\noindent Omdat er wordt geregulariseerd met dropout kan men voor meer capaciteit kiezen. Wegens dropout duurt het langer voordat het zoeken convergeert. Daarom neemt men 5 keer zoveel epochs.\\
+
+\noindent Probeer altijd te overfitten!
+\begin{enumerate}
+    \item Als je overfit, gebruik je regularisatie (zonder capaciteit te verkleinen).
+    \item Als je door regularisatie niet meer overfit, probeer je de capaciteit weer te vergroten.
+    \item Ga net zo lang door tot je weer overfit.
+    \item Overfit je niet, dan kan je waarschijnlijk een beter model vinden.
+\end{enumerate}
+
+\textbf{Bidirectional RNNs (BRNNs)}\\
+Een bidirectional RNN combineert twee modellen. Een normale RNN en een RNN waarin je de tijd achterstevoren invoert. BRNNs werken goed op problemen waar de volgorde belangrijk kan zijn, maar wat de volgorde is hoeft niet belangrijk te zijn (zoals taal). Het is mogelijk om zinnen achterstevoren te lezen en te begrijpen (en dus te voorspellen).\\
+
+\subsection{Enkele knoppen om aan te draaien}
+\begin{itemize}
+    \item Aantal eenheden in elke recurrente laag van een stapeling.
+    \item De hoeveelheid dropout.
+    \item De learning reate en/of de optimizer.
+    \item Probeer een stapel van dense-lagen ipv 1 dense-laag.
+    \item Kortere of langere input.
+    \item Andere sampling rate.
+    \item Feature engineering.
+\end{itemize}
+
+
+
+}
