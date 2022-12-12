@@ -1,0 +1,169 @@
+{\large
+\textbf{{\LARGE Week 4}}
+\section{Unsupervised Learning: ML}
+Supervised learning voor- en nadelen:
+\begin{itemize}
+    \item Uitstekend voor goed-gedefinieerde taken met voldoende labels
+    \item Bijvoorbeeld classificeren van afbeeldingen
+    \item Kosten van labelen kunnen hoog zijn en veel tijd kosten
+    \item Supervised model kan beperkt generaliseren. Afhankelijk van de traindata, terwijl de wereld zoveel groter is.
+\end{itemize}
+Unsupervised Learning voor- en nadelen:
+\begin{itemize}
+    \item Uitstekend voor problemen waar de structuren onbekend zijn of veranderen en er weinig gelabelde data is.
+    \item Bijvoorbeeld het groeperen van afbeeldingen die op elkaar lijken.
+    \item Minder handig in het beantwoorden van specifieke vragen.
+\end{itemize}
+Enkele unsupervised opdrachten:
+\begin{itemize}
+    \item Geautomatiseerd labelen data
+    \item Regulariseren
+    \item Dimensie-reductie
+    \item Feature engineering
+    \item Detecteren van uitschieters
+    \item Omgaan met drift van de data
+\end{itemize}
+Unsupervised-concepten:
+\begin{itemize}
+    \item \textbf{Dimensie-reductie}
+    \begin{itemize}
+        \item Het verminderen van het aantal variabelen.\\
+        \textit{Wat is de vorm van de datawolk?}
+    \end{itemize}
+    \item \textbf{Clustering}
+    \begin{itemize}
+        \item Het groeperen van de waarnemingen.\\
+        \textit{Uit hoeveel wolken bestaat de datawolk?}
+    \end{itemize}
+\end{itemize}
+\subsection{Dimensie-reductie}
+\begin{itemize}
+    \item \textbf{Lineair}
+    \begin{itemize}
+        \item Principal Component Analysis (PCA)
+        \item Random projection
+    \end{itemize}
+    \item \textbf{Manifold learning (niet-lineair)}
+    \begin{itemize}
+        \item Isometric mapping (Isomap)
+        \item Multidimensional scaling (MDS)
+        \item Locally linear embedding (LLE)
+        \item t-distributed stochastic neighbor embedding (t-SNE)
+    \end{itemize}
+\end{itemize}
+\subsubsection{Lineair}
+\textbf{Principal component analysis}\\
+We gaan ervan uit dat de vorm van de puntenwolk te benaderen is als een hoger-dimensionale matras (lineair) die in de variabele-ruimte ligt. In enkele dimensies is de matras lang, in andere dimensies is de matras dun. PCA detecteert de verschillende richtingen en de bijbehorende variantie (van de wolk). Vervolgens kan men de datawolk op een lager dimensionale ruimte projecteren.\\
+
+\noindent Model kan leren om lijnen zo te trekken dat fouten worden geminimaliseerd.
+
+\textbf{Random projection}\\
+Dit is een projectie naar een lager dimensionale ruimte zonder eerst de wolk te bestuderen.
+De projectie maakt gebruik van willekeurig gekozen richtingen. De projectie is zo gekozen dat het afstanden tussen punten (zo goed mogelijk) bewaard. Maakt gebruik van een foutmaat $\epsilon$. Hoe lager $\epsilon$ hoe beter de afstanden behouden blijven. Hoe lager $\epsilon$ hoe groter de inbeddingsruimte moet zijn.\\
+
+\textbf{PCA vs Random projection}\\
+PCA: adaptieve dimensie-reductie. Eerst de data bestuderen en dan projecteren.
+Random projection: niet-adaptieve dimensie-reductie. Projectie zonder de data van tevoren te bestuderen.
+\begin{itemize}
+    \item Voordeel PCA: beter inzicht in de data.
+    \item Voordeel Random Projection: bij veel variabelen praktischer.
+\end{itemize}
+
+\subsubsection{Manifold Learning}
+De datawolk hoeft geen lineaire structuur in de ruimte te hebben. In dat geval kan men manifold learning gebruiken om de puntenwolk in te bedden in een lager dimensionale ruimte. Men probeert nog steeds afstanden te behouden. Dat kan over de hele ruimte, maar ook lokaal. Zie \href{https://scikit-learn.org/stable/modules/manifold.html}{Manifold Learning} voor een bespreking van verschillende algoritmes en voor- en nadelen.
+
+\subsection{Clustering}
+\begin{itemize}
+    \item $k$-means clustering
+    \item Hiërarchische clustering
+    \item DBSCAN
+\end{itemize}
+
+\subsubsection{$k$-means clustering}
+Kies het aantal clusters $k$. Elk punt hoort bij het dichtsbijzijnde cluster. Kies de plek van de clusters zo dat de variantie binnen de clusters minimaal is.
+\begin{itemize}
+    \item Voordeel: snel algoritme te gebruiken bij veel data.
+    \item Nadeel: aantal clusters $k$ moeten aangenomen worden.
+\end{itemize}
+
+\subsubsection{Hiërarchische clustering}
+\begin{enumerate}
+    \item Begin met $N$ clusters (elke waarneming)
+    \item Bereken alle afstanden (tussen punten en clusters) en voeg de twee dichtsbijzijnde samen (tot een nieuw cluster).
+    \item Herhaal bovenstaande stap tot er 1 cluster overblijft.
+\end{enumerate}
+\noindent Uitvoer is een dendogram waaraan men kan aflezen hoeveel clusters er in de puntenwolk zijn.
+\begin{itemize}
+    \item Voordeel: het aantak clusters is een resultaat.
+    \item Nadeel: kost veel rekenkracht.
+\end{itemize}
+\subsubsection{DBSCAN}
+\textit{density-based spatial clustering of applications with noise}. Maakt niet alleen gebruik van afstand, maar ook van dichtheid. Niet elk punt hoeft in een cluster te vallen.
+ Bovenstaande maakt het geschikt voor het werken met uitschieters. Het algoritme detecteert 'ongewone' punten.
+ \begin{enumerate}
+     \item Een verzameling $S_{m,p}$ van minstens $m$ punten die elk op afstand $\epsilon$ van elkaar staan vormt een cluster. Dit zijn de kernpunten.
+     \item Een punt dat op afstand $\epsilon$ van elk kernpunt is, wordt zelf ook een kernpunt.
+     \item Een punt dat op afstand $\epsilon$ van een kernpunt is, wordt aan het cluster toegevoegd (als grenspunt).
+     \item Stap 1 met overgebleven punten. Dit zijn de kernpunten van een nieuw cluster.
+     \begin{itemize}
+         \item Als gevonden: stap 2, 3 met overgebleven punten en nieuw cluster.
+         \item Als niet gevonden: overgebleven punten zijn uitschieters.
+     \end{itemize}
+ \end{enumerate}
+
+\section{Auto-encoders}
+Een PCA van $p$ variabelen naar $q$ componenten is te formuleren als een optimalisatieprobleem. Als \textbf{X} een $n \times p$ data matrix is, vind een $p \times q$ matrix $\mathbb{R}$ zodat 
+\[
+\textbf{P=X}\mathbb{R}\]
+\[\textbf{X}_{new}=\mathbb{R}^\top \textbf{P}
+\]
+en
+\[\textrm{Reconstruction Error}^2=\frac{1}{n}\sum_{i=1}^n|\overrightarrow{x}_i-\overrightarrow{x}_{new,i}|^2\]
+
+\noindent De PCA projectie op $\mathbb{R}^2$ op de MNIST-dataset ziet er als volgt uit:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\linewidth]{Images/PCA_mt.png}
+    \caption{Architectuur gezicht genereren}
+    \label{fig:generatedfaces}
+\end{figure}
+
+\noindent
+Neuraal netwerk kan een PCA benaderen met lineaire activatiefunctie. Je verwacht geen lineaire deelruimte. Een auto-encoder kan de PCA op een niet lineaire manier benaderen (gebruik niet lineaire activatiefunctie).\\
+
+\noindent Een auto-encoder bestaat uit twee delen:
+\begin{itemize}
+    \item Een encoder, die de invoer transformeert naar een midden laag.
+    \item Een decoder, die de midden laag terug transformeert naar de invoer.
+\end{itemize}
+Wiskundig geformuleerd is de encoder een functie $\overrightarrow{h}=f(\overrightarrow{x})$ die de invoer $\overrightarrow{x} \in \mathbb{R}^p$ transformeert naar $\mathbb{R}^q$. De decoder probeert de encoder te inverteren, en is een functie $\overrightarrow{x}_{new}=g(\overrightarrow{h})$ die de middenlaag transformeert van $\mathbb{R}^q$ naar $\mathbb{R}^p$. \\
+
+We noemen de compositie $\overrightarrow{x}_{new}=g(f(\overrightarrow{x}))$ de reconstructie-functie.
+\begin{itemize}
+    \item Als $q<<p$ dan noemen we de autoencoder \textit{undercomplete}. Er zal zeker weten informatie verloren gaan in de reconstructie (en dit willen we vaak juist).
+    \item Als $q>>p$ dan noemen we de autoencoder \textit{overcomplete}. In combinatie met regularisatie (om te zorgen dat het model daadwerkelijk blijf versimpelen) zijn deze modellen vaak krachtiger, maar moeilijker te trainen.
+\end{itemize}
+Door een willekeurige vector in de midden laag te kiezen en hier de decoder op los te laten kunnen kunstmatige datapunten gegenereerd worden.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Images/generatedface.png}
+    \caption{Architectuur gezicht genereren}
+    \label{fig:generatedfaces}
+\end{figure}
+
+\noindent Bepaalde richtingen in de latent space (niet-lineaire PCA plot) komen vaak overeen met bepaalde kenmerken.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/generatedfaces_mt.png}
+    \caption{Continu vlak van gegenereerde gezichten}
+    \label{fig:generatedfaces}
+\end{figure}
+
+\noindent Auto-encoder gebruik: je maakt je data kleiner, maar op een betekenisvolle manier.
+
+
+
+}
