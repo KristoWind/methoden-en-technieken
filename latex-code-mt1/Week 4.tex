@@ -1,0 +1,89 @@
+{\large
+\textbf{{\LARGE Week 4}}\\
+Aandachtspunten:
+\begin{itemize}
+    \item Modelbeoordeling en -selectie: Resampling methods
+    \item Data snooping, data leakage (\href{https://arxiv.org/pdf/2207.07048.pdf}{Leakage and the Reproducibility Crisis in ML-based Science})
+    \begin{itemize}
+        \item zie taxonomy template in Data\_leakage\_taxonomy.docx in ../Vakken/MenT
+    \end{itemize}
+\end{itemize}
+\section{Resampling methods}
+Manieren om iets te kunnen zeggen over de variantie van de schatting. Onderstaande methoden worden gebruikt om een \textbf{model te beoordelen} op testdata en het \textbf{selecteren van een model} (welk niveau van flexibiliteit):
+\begin{enumerate}
+    \item Cross-validatie
+    \item Bootstrap
+\end{enumerate}
+\subsection{Cross-validatie}
+Train-test split kan ook gesplitst worden in train-val-test split (train set nog een keer splitsen). Train met verschillende waarden voor hyperparameters op de trainset en beoordeel de prestatie van de modellen op de validatieset. Nadelen zijn dat de fout-maat op de validatie afhankelijk is van de splitsing en je hebt een kleinere trainset waardoor de schatting van de fout-maat minder goed is (mogelijk een bias). Oplossing is \textbf{Leave-one-out cross-validation (LOOCV)}:
+
+\subsubsection{LOOVC}
+\noindent Trainset van $n$ waarnemingen. Splits de trainset $n$ keer in een:
+\begin{itemize}
+    \item nieuwe trainset van $n-1$ waarnemingen, en
+    \item een validatieset van overgebleven waarneming
+\end{itemize}
+Met als fout-maat de gemiddelde foutmaat op de $n$ verschillende validatiesets. Zodoende wordt de trainset nauwelijks kleiner en is de foutmaat niet afhankelijk van de splitsing.\\
+
+\subsubsection{$k$-fold CV}
+Moet $n$ keer getraind worden op $n-1$ waarnemingen. Dus, \textbf{$k$-fold cross-validation ($k$-fold CV)} gebruiken:\\
+Stel dat we de hyperparameter $\lambda$ willen tunen (bijvoorbeeld KNN om $k$ te tunen):
+\begin{itemize}
+    \item Definieer $M$ verschillende waarden $\lambda_1, \lambda_2,..., \lambda_M$ voor $\lambda$
+    \item Bepaald voor elke waarde $m \in {1,...,M}$ middels $k$-fold CV de gemiddelde foutmaat $E_{CV}(m)$
+    \item kies die waarde $m^*$ voor $m$ waarvoor $E_{CV}(m)$ het laagst is
+    \item train opnieuw, maar nu op de gehele dataset en $\lambda_{m^*}$
+\end{itemize}
+Vuistregel: gebruik k=10 en gebruik honderd waarnemingen om slechts enkele parameters te tunen.\\
+
+\noindent Wat kan $\lambda$ zijn?:
+\begin{itemize}
+    \item Wat is het type model dat wil ik gebruiken?
+    \begin{itemize}
+        \item lineair of NN of SVM
+        \item polynomiaal model: tot hoeveelste orde
+        \item keuze voor tuning-parameter in regularisatie
+    \end{itemize}
+\end{itemize}
+
+\subsection{Bootstrapping} (doen alsof er meer data is om achter de variantie van je steekproefgemiddelde te komen.)\\
+Is een manier om de variantie van een schatter te schatten middels steekproeven uit een steekproef:
+\begin{itemize}
+    \item oorspronkelijke steekproef $S$ van $n$ waarnemingen
+    \item Trek met teruglegging $B$ steekproeven van $n$ waarnemingen
+    \item Laat $\hat{\alpha}$ geschat zijn met $S$
+    \item Het idee van bootstrapping is dat we de verdeling van $\hat{\alpha}$ kunnen schatten middels de geschatte parameters $\hat{\alpha}^{*b}$ $(b \in {1, 2,.., B})$ die geschat zijn op de B steekproeven.
+    \item Een schatting voor de variantie van ˆα zal gegeven worden
+door de steekproefvariantie van de $\hat{\alpha}^{*b}$
+\end{itemize}
+Waarom zou je bootstrapping willen toepassen?:\\
+Als de variantie heel hoog is, is de zekerheid laag. Je wilt met bepaalde zekerheid zeggen dat het steekproefgemiddelde een bepaalde waarde heeft.
+
+\noindent Hyperparameter: parameters om leerproces aan te sturen\\
+Parameter: gewichten/coëfficiënten = uitkomsten na leren\\
+
+\subsection{Data snooping/data leakage}
+\begin{itemize}
+    \item Geen correcte train-test-splitsing
+    \begin{itemize}
+        \item Geen testset
+        \item Datapreparatie op train- en testset
+        \item Variabelenselectie op train- en testset
+        \item Dubbelingen in testset
+    \end{itemize}
+    \item Verkeerde variabelen
+    \begin{itemize}
+        \item Medicijngebruik om hoge bloeddruk te meten
+    \end{itemize}
+    \item Testset is niet representatief
+    \begin{itemize}
+        \item Lekkage in de tijd (om een voorspelling in de tijd te maken, hoort de train-set voor de testset hebben plaatsgevonden)
+        \item Geen oafhankelijkheid tussen train- en testset (voorbeeld: verschillende waarnemingen van dezelfde persoon in de train- en testset)
+        \item Bias in testset
+        \begin{itemize}
+            \item Testset van specifieke regio, maar iets beweren over alle regio's
+            \item Ongewenste waarnemingen weglaten uit de testset
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+}
