@@ -1,0 +1,195 @@
+{\large
+\begin{center}
+    {\Large \textbf{Methoden en Technieken: Supervised ML}}\\
+\end{center}
+\tableofcontents
+\newpage
+\section*{Data-analyse stappenplan}
+\begin{enumerate}
+    \item Dataset altijd eerst ruwe data, zoals fotos of punten op assenstelsel. Eerst gevoel krijgen voor de data.
+    \item Hoeveel verschillende soorten data. Mist er data? 
+    \item Willekeurige plots maken.
+    \item logaritme van inkomen vertalen het beter. 
+    \item Afmetingen bekijken.
+    \item Min-max waarden.
+    \item Aantal fotos per persoon op volgorde (df.value\_counts(subset='Name')).
+    \item Histogram plotten (plt.hist(counts[:,1], bins=30)).
+    \item Voor balans in data, augmenteren.
+\end{enumerate}
+\newpage
+\textbf{{\LARGE Week 1}}\\
+Aandachtspunten:
+\begin{itemize}
+    \item Leerdoelen 7, 8, 9, 12
+    \item $E(\bar{X})=\mu$ %blz. 106 LaTeX symbol list
+    \item $Y=f(X)+\epsilon$
+    \item Flexibiliteit van een model
+    \item \href{https://hastie.su.domains/ISLR2/ISLRv2_website.pdf}{Statistical Learning hoofdstuk 2}.
+    \begin{itemize}
+        \item prediction \& inference (regressie)
+        \item parametric \& non-parametric methods (regressie)
+        \item The Bayes Classifier (classificatie)
+    \end{itemize}
+\end{itemize}
+
+\section{Basiskennis statistiek en kansrekening}
+\begin{center}
+    $E(\bar{X})=\mu$
+\end{center}
+\noindent $\bar{X}$ = steekproefgemiddelde (unbiased estimator)\\
+$\mu$ = populatiegemiddelde\\
+$E$ = verwachtingswaarde\\ \vspace{0.3cm}
+
+\noindent Waarom statistiek en kansrekening?
+\begin{itemize}
+    \item Wat is het percentage minderjarige bezoekers per dag?
+    \item Is dat elke dag hetzelfde?
+    \item Wat is het gemiddelde percentage minderjarige bezoekers per dag?
+    \item Wat is, gemeten over een maand, het gemiddelde percentage minderjarige bezoekers per dag?
+    \item Wat zegt dit over het werkelijke gemiddelde percentage minderjarige bezoekers per dag?
+    \item Wat zegt dit over het werkelijke percentage minderjarige bezoekers op een dag?
+\end{itemize}\vspace{0.5cm}
+
+
+\textbf{Voorbeeld ML-vraagstuk} (regressie)\\
+\noindent Het bepalen van de leeftijd van de klant adhv de variabele gewicht komt wiskundig neer op het bepalen van de $f$ in de volgende vergelijking:\\
+\begin{center}
+    $Y=f(X)+\epsilon$\\
+\end{center}
+
+\noindent
+Met $Y$ de leeftijd van de klant, $X$ het gewicht van de klant en $\epsilon$ de fout-term.\\
+$f$: de informatie in $X$ over $Y$ (deterministisch: temaken met een kans)\\
+$\epsilon$: dat wat we niet kunnen weten over Y, gegeven X (stochastisch). Het verschil voorspelde leeftijd en echte leeftijd\\
+
+\noindent Leren: het schatten van functie $f$. Data gebruiken is essentieel. Als we $f$ op een andere manier zouden bepalen (bijv. uit theoretische overwegingen) zal het niet leren worden genoemd.\\
+
+\noindent Diverse ontwerpkeuzes die behandelt dienen te worden. Onderstaande bepaald adhv de opdracht en is de ontwerpvraag.\\
+\begin{itemize}
+    \item Classificatie of regressie?
+    \item Welke foutmaat? Wat wil je minimaliseren?
+    \item Voorspellen of samenhang? Blackbox al goed of wil je weten hoe?
+\end{itemize}\vspace{0.3cm}
+\noindent Onderstaand wordt het model genoemd (hypothesis set en algoritme samen)
+\begin{itemize}
+    \item Welke functies om $f$ te schatten (hypothesis set)?
+    \item Welk algoritme om de beste $\hat{f}$ te vinden?
+\end{itemize}\vspace{0.5cm}
+
+
+\section{Flexibiliteit van het model (om f proberen te schatten)} 
+\noindent Kans is aanwezig dat $f$ niet lineair van $X$ afhangt en dat de foutmaat kleiner wordt als we een flexibeler model kiezen (hypotheseruimte groter maken). Hoe meer termen, hoe meer kans op overfitting. $\hat{f}(X)=\hat{\beta_0}+\hat{\beta_1}X$ is lineair bijvoorbeeld. De onderstaande polynoom niet.\\
+\begin{center}
+$\hat{f}X)=\hat{\beta_0}+\hat{\beta_1}X+\hat{\beta_2}X^2+\hat{\beta_3}X^3+\hat{\beta_4}X^4$
+\end{center}
+
+\subsection{De bias-variance tradeoff}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\linewidth]{Images/biasvariance.png}
+    \caption{bias-variance}
+    \label{fig:biasvariance}
+\end{figure}
+Als data wordt weergegeven door:
+\begin{center}
+    $(x_1,y_1),(x_2,y_2),..,(x_n,y_n)$
+\end{center}
+dan wordt de foutmaat gegeven door de mean squared error (MSE):
+\begin{center}
+    $MSE=E[(Y-\hat{f}(x_0))^2]=Var(\hat{f}(x_0))+(f(x_0)-E[\hat{f}(x_0))^2+Var(\epsilon)=Var(\hat{f}(x_0))+B(\hat{f}(x_0))^2+Var(\epsilon)$
+\end{center}
+\noindent Waarbij:\\
+1e term: de spreiding van de steekproef (hoe groot is het wolkje?) \\
+2e term: als 0 = geen gemiddelde afwijking = geen bias (hoeveel zit je gemiddeld af van de roos ($\mu$)\\
+3e term: de spreiding van de error-term\\
+Met aannames:
+\begin{enumerate}
+    \item $Var(X)=E(X^2)-E(X)^2$
+    \item $E(\epsilon)=0$
+    \item $Cov(X,\epsilon)=0$
+\end{enumerate}
+
+
+\section{Statistical Learning} \vspace{1mm}\\
+\noindent \textbf{inputs} ($X_1, X_2,..., X_p$) = predictors, independent variables, features, variables\\
+\textbf{output}($Y$) = response, dependent variable\\
+
+\noindent \textbf{Prediction}: When function $f$ is not neccessary to determine (blackbox).
+\begin{itemize}
+    \item \textit{predict the response using predictors.}
+\end{itemize}\vspace{3mm}
+
+
+\noindent \textbf{Inference}: Need to know function $f$.
+\begin{itemize}
+    \item \textit{Which media are associated with sales?}
+    \item \textit{Which media generate the biggest boost in sales?}
+    \item \textit{To what extent is the product's price associated with sales?}
+\end{itemize}\vspace{3mm}
+
+\textbf{Estimate $f$:}
+\begin{itemize}
+    \item Parametric methods
+    \item Non-parametric methods
+\end{itemize}\vspace{3mm}
+
+\textbf{\textit{Parametric methods (inflexible)}}:
+\begin{enumerate}
+    \item Make an assumption about the functional form of shape of $f$ (linear).
+    \item Need an approach to fit the model.
+\end{enumerate}
+Answers:
+\begin{enumerate}
+    \item $Y\approx\beta_0+\beta_1X_1+\beta_2X_2+...+\beta_pX_p$.
+    \item (ordinary) least squares is most common.
+\end{enumerate}
+
+\subsection{Non-parametrische methoden (flexibel)}
+Non-parametric methods do not make explicit assumptions about the functional form of $f$. Instead they seek an estimate of $f$ that gets as close to the data point as possible without being too rough of wiggly.
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}{0.3\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/lineaire regressie plot.png}
+        \caption{Linear (parametric)}
+        \label{fig:parametric}
+    \end{subfigure}
+    \:
+    \begin{subfigure}{0.3\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/flexibele regressie.png}
+        \caption{Flexible (non-parametric)}
+        \label{fig:non-parametric}
+    \end{subfigure}
+    \:
+    \begin{subfigure}{0.3\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{Images/overfitting.png}
+        \caption{Too flexible (overfitting)}
+        \label{fig:overfitting}
+    \end{subfigure}
+    \caption*{}\vspace{-3mm}
+    \label{fig:3dplots}
+\end{figure}
+
+\noindent Regressie: kwantitatief\\
+Classificatie: kwalitatief\\
+
+\noindent Cross-validatie (zie week 4): estimation method for estimating test MSE using the training data (MSE = optimal combination of bias \& variance).\\
+Good performance: low squared bias \& low variance.
+
+\section{Classificatie}
+\begin{itemize}
+    \item The Bayes Classifier
+    \item KNN
+\end{itemize}
+
+\subsection{The Bayes Classifier}
+The line where $Pr(Y=j|X=x_0)$ is exactly 0.5, with error $1-E(\max\limits_{j}Pr(Y=j|X))$.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Images/bayes method.png}
+    \caption{Bayes Classifier}
+    \label{fig:knn}
+\end{figure}
+}
