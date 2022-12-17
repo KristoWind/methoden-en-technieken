@@ -37,7 +37,6 @@ Folder blok1-mt describe the basics of supervised ML and -DL. With the schema pe
   
 [ISL]:  
 @book{James2013,  
-  added-at = {2019-10-12T20:03:56.000+0200},  
   author = {James, Gareth and Witten, Daniela and Hastie, Trevor and Tibshirani, Robert},  
   biburl = {https://www.bibsonomy.org/bibtex/2444186c86d18bddb4433c12fa126f6be/lopusz_kdd},  
   interhash = {b3febabdc45a8629023cee7323dfbd86},  
