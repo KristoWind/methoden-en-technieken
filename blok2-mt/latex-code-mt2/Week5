@@ -1,0 +1,42 @@
+{\large
+\textbf{{\LARGE Week 5}}
+\section{Variational Auto-Encoders}
+De auto-encoder probeert het kromme vlak te leren, waar de data op leeft. De PCA kan dat niet, die leeft op een lineair vlak. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\linewidth]{Images/AE_mt.png}
+    \caption{$\mathbb{R}^2$ Auto-encoder}
+    \label{fig:generatedfaces}
+\end{figure}
+
+\begin{itemize}
+    \item Waarnemingen worden gegenereerd via een kansproces
+    \item De latent space beschrijft niet de exacte data maar een kansverdeling van dit proces
+    \item We nemen aan dat deze kansverdeling een normaal verdeling is
+    \item De encoder leert gemiddelde ($\mu$) en variantie ($\sigma ^2$) van de verdeling te schatten
+    \item Vervolgens wordt er een trekking gedaan uit deze verdeling
+    \item De decoder probeert deze trekking terug te transformeren naar de oorspronkelijke data.
+\end{itemize}
+\noindent Omdat de decoder een variantie moet schatten is een aangepaste loss-functie nodig:
+\[\textrm{loss}=\textrm{Reconstruction loss}+\textrm{\textit{KL}-loss}\]
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/VAE_architectuur.png}
+    \caption{Variational auto-encoder architectuur}
+    \label{fig:generatedfaces}
+\end{figure}
+
+Variational auto-encoders geven niet alleen 2 coördinaten, maar ook 2 onzekerheden om het punt heen. Sampling zit alleen in het trainingsproces. Hij leert welke gemiddelde ($\mu$) en standaardafwijking ($\sigma$) goed zijn om de reconstructie-fout laag te hebben. Eigenlijk is het een soort verborgen data-augmentatie midden in je model. Nieuwe data genereren in je model om beter te trainen.
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/VAE_mt.png}
+    \caption{$\mathbb{R}^2$ Variational auto-encoder}
+    \label{fig:generatedfaces}
+\end{figure}
+
+
+}
