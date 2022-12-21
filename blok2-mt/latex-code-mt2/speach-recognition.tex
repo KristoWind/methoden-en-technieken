@@ -1,0 +1,104 @@
+{\large
+\textbf{{\LARGE Bonus: spraakherkenning}}
+\section{Spraak}
+\begin{itemize}
+    \item stemhebbende letters: [z], [v], [b], [d]
+    \item stemloze letters: [s], [f], [p], [t]
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/plaatsvanarticulatie}
+    \caption{Plaats van articulatie}
+    \label{fig:articulatie}
+\end{figure}
+
+\subsection{Klinkers}
+\begin{itemize}
+    \item Geen blokkade
+    \item Stemhebbend
+    \item Gemiddelde duur: 70 ms
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.35\linewidth]{Images/klinkers.png}
+    \caption{Klinkers}
+    \label{fig:articulatie}
+\end{figure}
+
+\subsection{Co-articulatie}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/coarticulatie.png}
+    \caption{Co-articulatie}
+    \label{fig:articulatie}
+\end{figure}
+
+\subsection{Socio-linguïstische variatie}
+Medewerkers van diverse klassen warenhuizen wordt gevraagd op welke verdieping een product ligt, wetende dat het op de vierde verdieping ligt. Het bleek dat bij warenhuis Saks (duurder) de [r] veel vaker wordt uitgesproken door de medewerkers dan in Klein (minder shique).
+\begin{itemize}
+    \item Dialect
+    \item Geslacht, leeftijd, sociale status
+    \begin{itemize}
+        \item Bijv. mannen gebruiken vaker niet-standaard vormen
+    \end{itemize}
+    \item Identiteit
+    \begin{itemize}
+        \item Saks, Macy's, Klein: [r] in fourth floor
+        \item Martha's Vineyard
+    \end{itemize}
+\end{itemize}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\linewidth]{Images/sociolinguistischevariatie.png}
+    \caption{Socio-linguïstische variatie}
+    \label{fig:sociolinguistisch}
+\end{figure}
+\section{Audio}
+\noindent
+De audiogolf van een woord:\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/audiogolf.png}
+    \caption{Audiogolf}
+    \label{fig:audiogolf}
+\end{figure}
+\newpage
+\noindent Een sample (25 ms) van de audiogolf lijkt een patroon te bevatten:\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/audiogolfsample.png}
+    \caption{Audiogolf sample}
+    \label{fig:sample}
+\end{figure}
+
+\noindent We voeren een Fourier transformatie uit op de sample:\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/fouriertrans.png}
+    \caption{Fourier transformatie}
+    \label{fig:fouriertrans}
+\end{figure}
+
+\noindent Het audiospectrum van de Fourier transformatie op toon [iy]:\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\linewidth]{Images/shefourier.png}
+    \caption{[iy] in 'She'}
+    \label{fig:fouriertrans}
+\end{figure}
+
+\noindent Dit proces wordt elke 10 ms uitgevoerd. Dat wordt \textit{windowing} genoemd. Als alle audiospectra van de Fouriertransformatie achter elkaar geplakt worden ontstaat de volgende spectogram van het woord 'bericht':
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/spectogram.png}
+    \caption{Spectogram}
+    \label{fig:fouriertrans}
+\end{figure}
+
+
+
+
+}
