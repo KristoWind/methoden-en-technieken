@@ -1,0 +1,139 @@
+{\large
+\textbf{{\LARGE Week 6}}
+\section{Boltzmann Machines}
+\subsection{KL Divergence}
+De Kullback-Leiber (KL) divergence is een begrip uit de informatie theorie. Informatie theorie gaat over het efficient comprimeren van data (denk aan zip).\\
+
+\begin{mytheo}{Self-attention}{theoexample}
+Als $p(x)=P(X=x)$ de kansverdeling is van een kansvariabele X, dan is
+\[I(x)=-log_2p(x)\]
+de self-information, gemeten in bits, van de gebeurtenis $X=x$.
+\end{mytheo}
+\noindent De self-information meet (een ondergrens voor) het aantal bits dat nodig is voor symbool $x$ bij een optimaal compressie algoritme.
+
+\begin{mytheo}{Shannon entropy}{theoexample}
+De verwachtingswaarde van $l(x)$ onder de kansverdeling $p(x)$
+\[H(p)=\mathbb{E}[I(x)]=-\mathbb{E}[log_2p(x)]=-\sum_xp(x)log_2p(x)\]
+noemen we de Shannon entropy van de kansverdeling $p$.
+\end{mytheo}
+\noindent Dit is het gemiddeld aantal bits dat we nodig hebben om een symbool $x$ te versturen.\\
+
+\noindent Merk op: als $p(x)$ bestaat uit twee gebeurtenissen (binaire classificatie), dan is dit hetzelfde als de binary cross entropy die we al kennen vanuit classificatieproblemen.
+
+\begin{mytheo}{KL-divergence}{theoexample}
+Als $p(x)$ en $q(x)$ twee kansverdelingen zijn over dezelfde kansvariabele $X$, dan is de Kullback-Leibner divergence de verwachtingswaarde over $p(x)$ van het verschil in self-information
+\[D_{KL}(p||q)=\mathbb{E}[log_2p(x)-log_2q(x)]\]
+\end{mytheo}
+\noindent Als we een symbool $x$ zouden comprimeren volgens een optimaal compressie algoritme over $q(x)$ terwijl $x$ eigenlijk de verdeling $p(x)$ heeft, dan is de \textit{KL-divergence} het gemiddeld aantal extra bits dat je nodig hebt.
+
+\subsection{Graphical models}
+% \begin{itemize}
+%     \item Een classificatiemodel probeert een kansverdeling $\hat{p}(y)$ voor een discrete kansvariabele $Y$ te schatten, bij een goed model zal deze in de buurt van de echte (onbekende) verdeling $p(y)$ liggen.
+%     \item Als er $K$ klasses zijn voor $Y$, dan moet het model $K$ kansen bepalen.
+%     \item Een model kan ook voor $n$ discrete kansvariabelen $Y_1,Y_2,\ldots , Y_n$ een (simultane) kansverdeling $\hat{p}(y_1,y_2,\ldots, y_n)$ proberen te schatten.
+%     \item Als er $K_i$ klasses zijn voor $Y_i$, dan moet het model $K_1\times K_2 \times \ldots \times K_n$ kansen bepalen.
+%     \item Dit loopt snel uit de hand!
+% \end{itemize}
+% \noindent Een mogelijke oplossing:
+% \begin{itemize}
+%     \item We nemen aan dat $Y_1$ t/m $Y_n$ allemaal onafhankelijk zijn, dan is \[p(y_1,y_2,\ldots, y_n)=p(y_1)\times p(y_2)\times \ldots \times p(y_n)\]
+%     \item Nu hoeven we maar $K_1+K_2+\ldots + K_n$ kansen te bepalen.
+% \end{itemize}
+% Deze aanname klopt echter vaak niet.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/graphicalmodels.png}
+    \caption*{}
+    \label{fig:graphicalmodels}
+\end{figure}
+
+Graphical models komen in twee smaken:
+\begin{itemize}
+    \item Directed models
+    \item Undirected models
+\end{itemize}
+In een \textit{undirected model} beinvloeden $A$ en $B$ elkaar wederzijds. De factorisatie van de kansverdeling is nu iets ingewikkelder, het kan geschreven worden als een product over iedere \textit{clique} in de graaf.
+\[p(a,b,c,d,e)=\frac{1}{Z}\phi_{a,b,c}(a,b,c)\phi_{b,d}(b,d)\phi_{c,e}(c,e)\]
+
+\begin{mytheo}{Boltzmann machine}{theoexample}
+Een Boltzmann machine is een undirected graphical model waarvan de kansverdeling de volgende vorm heeft:
+\[p(\vec{x})=exp(-E(\vec{x}))\]
+De functie $E(\vec{x})$ word ook wel de \textit{energy function} genoemd.
+\end{mytheo}
+\noindent Vaak word er vervolgens nog een opsplitsing gemaakt tussen
+\begin{itemize}
+    \item \textit{visible} nodes, deze zijn gemeten en zitten in je (trainings) data
+    \item \textit{hidden} ofwel \textit{latent} nodes
+\end{itemize}
+Patel schrijft:
+\textit{"These unrestricted Boltzmann machines use neural networks with neurons that are connected not only to other neurons in other layers but also to neurons within the same layer. That, coupled with the presence of many hidden layers, makes training an unrestricted Boltzmann machine very inefficient. Unrestricted Boltzmann machines had little commercial success during the 1980s and 1990s as a result."}\\
+
+\noindent De oplossing hiervoor is de \textit{\textbf{Restricted Boltzmann Machine}}
+\subsection{Restriced Boltzmann Machines}
+Eerder definieerden we een Boltzmann Machine als een undirected graphical model met visible (invoer) en latent (hidden) nodes. We merkten op dat de onderlinge verbindingen tussen de latent nodes, en tussen de visible nodes het trainen heel moeilijk maken. Een Restrictive Boltzmann Machine lost dit op door deze verbindingen te verbieden.\\
+
+\noindent Dit correspondeert met de volgende kansverdeling:
+\[p(\vec{v},\vec{h})=exp(-E(\vec{v},\vec{h}))\]
+met als energie
+\[E(\vec{v},\vec{h})=-\vec{a}\cdot \vec{v}-\vec{b}\cdot \vec{h}-\vec{v}\cdot W\vec{h}\]
+Hier zijn $\vec{a}$ en $\vec{b}$ bias vectoren en $W$ een matrix die de overgang van de \textit{visible} van en naar de \textit{hidden} laag definieerd.
+\subsubsection{Voorbeeld: Movie Recommender Systems}
+Als voorbeeld gaan we een RBM gebruiken om een aanbevelingsmodel voor films te maken. We gebruiken een selectie van de MovieLens 20M Dataset, deze bevat 90213 film recensies gemaakt door 1000 personen over 1000 films.
+\begin{itemize}
+    \item Om dit een binair classificatieprobleem te maken negeren we de recensies zelf, en kijken we alleen of een persoon film $i$ wel $(v_i=1)$ of niet $(v_i=0)$ gezien heeft.
+    \item Iedere rij in onze data bestaat dus uit een vector $\vec{v}=(v_1,v_2,\ldots,v_{1000})\in {0,1}^{10}$
+\end{itemize}
+\noindent Doel is om de kans $P(v_i=1)$ te voorspellen dat iemand een film wilt zien.
+\begin{itemize}
+    \item De invoer en uitvoer van ons model zijn dus eigenlijk hetzelfde.
+    \item We doen dit met een RBM met 1000 \textit{visible} nodes (onze in-/uitvoer) en 10 \textit{latent} nodes die alleen de waardes 0 of 1 aannemen.
+    \item De \textit{latent} nodes zijn dus een vector $\vec{h}=(h_1,h_2,\ldots,h_{10})\in {0,1}^{10}$
+    \item De intuitie is dat de \textit{laten} nodes een soort van genrevoorkeur (horror, rom-com, documentaires, ...) coderen.
+\end{itemize}
+\subsubsection{Het model}
+Het model geeft ons twee belangrijke voorwaardelijke kansverdelingen:
+\begin{itemize}
+    \item De forward pass
+    \[p(h_j=1|\vec{v})=\sigma(b_j+\sum v_iW_{ij})\]
+    \item De backward pass
+    \[p(v_j=1|\vec{h})=\sigma(a_j+\sum W_{ij}h_j)\]
+\end{itemize}
+\noindent met $\sigma (x)=\frac{1}{1+e^{-x}}$ de gebruikelijke sigmoid functie.
+
+\subsubsection{Constrastive Divergence}
+De parameters ($W_{ij}$, $a_i$ en $b_j$), worden gevonden door de \textit{log-likelihood} te maximaliseren met gradient ascend. Dit komt neer op de marginale kans $p(\vec{v})$ te maximaliseren. Dit geeft onder andere de volgende update regel voor de gewichten $W_{ij}$:
+
+\[
+\Delta W_{ij} = r \Big( \underbrace{\mathbb{E}[v_i h_j | \vec{v}]}_{data} - \underbrace{\mathbb{E}[v_i h_j]}_{model} \Big)
+\]
+
+met $r$ de \textit{learning rate}. Volgens Hinton is dit verschil bijna gelijk aan het verschil in twee KL-divergences.
+
+Probleem: om $\mathbb{E}[v_i h_j]$ exact uit te rekenen is een sommatie over alle mogelijkheden voor $\vec{v}$ en $\vec{h}$ nodig. Dit zijn $2^{10000}$ termen.
+\subsubsection{De Monte Carlo benadering}
+Een Monte-Carlo benadering is een manier om verwachtingswaardes $\mathbb{E}[f(x)]$ waar $x$ een kansverdeling $p(x)$ heeft, te benaderen
+\begin{itemize}
+    \item Neem een steekproef van $x$ uit $p(x)$
+    \item Bereken $f(x)$
+    \item Bereken het steekproefgemiddelde van $f(x)$
+\end{itemize}
+\noindent Probleem: de kansverdeling de kansverdeling $p(\vec{v}, \vec{h})$ heeft $2^{10000}$ mogelijke uitkomsten...
+\subsubsection{De Markov Chain Monte Carlo benadering}
+De manier om $\mathbb{E}[v_i h_j]$ te berekenen zonder een trekking uit een onmogelijke kansverdeling te hoeven nemen gaat als volgt:
+\begin{itemize}
+    \item Neem een aantal (een *batch*) van echte waarnemingen $\vec{v}^{\ (0)}$
+    \item Bereken de voorwaardelijke kansverdeling $P(h_j=1 | \vec{v}^{\ (0)}) = \sigma(b_j + \vec{v}^{\ (0)}_i W_{ij})$
+    \item Trek $\vec{h}^{\ (0)}$ uit deze verdeling
+    \item Bereken de voorwaardelijke kansverdeling $P(v_i=1 | \vec{h}^{\ (0)}) = \sigma(a_i + W_{ij}\vec{h}^{\ (0)}_j)$
+    \item Trek $\vec{v}^{\ (1)}$ uit deze verdeling
+    \item Bereken de voorwaardelijke kansverdeling $P(h_j=1 | \vec{v}^{\ (1)}) = \sigma(b_j + \vec{v}^{\ (1)}_i W_{ij})$
+    \item Trek $\vec{h}^{\ (1)}$ uit deze verdeling
+    \item Ga zo door, totdat de voorwaardelijke kansverdelingen lijken te convergeren, dit geeft een trekking $\vec{v}^{\ (n)}, \vec{h}^{\ (n)}$
+    \item Een gemiddelde hierover geeft onze benadering
+\end{itemize}
+
+
+
+
+}
