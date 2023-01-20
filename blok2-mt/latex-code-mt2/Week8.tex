@@ -1,0 +1,132 @@
+{\large
+\textbf{{\LARGE Week 8}}
+\section{Generative Adversial Networks (GANs)}
+GANs (zie \href{https://arxiv.org/abs/1406.2661}{hier}) zijn een alternatief voor andere generatieve modellen zoals:
+\begin{itemize}
+    \item Deep directed graphical models
+    \item Deep undirected graphical models
+    \item Generative autoencoders
+\end{itemize}
+\noindent En is en alternatief voor het leren van \textit{latent spaces} van afbeeldingen.\\
+
+\noindent GANs bestaan uit twee componenten:
+\begin{itemize}
+    \item \textbf{Generator network}\\
+    Heeft als invoer een willekeurig punt uit de latent space en genereert daar een afbeelding van.
+    \item \textit{Discriminator network (adversary, tegenstander)}\\
+    Heeft als invoer een afbeelding en bepaalt of dat een afbeelding uit de trainset is of een gegenereerde afbeelding.
+\end{itemize}
+\noindent Een GAN wordt zo getraind dat:
+\begin{itemize}
+    \item de generator goed wordt in het misleiden van de discriminator.
+    \item de discriminator goed wordt in het herkennen van afbeeldingen van de generator.
+\end{itemize}
+\noindent Men zou de generator kunnen zien als de vervalser en de discriminator als de expert die vervalsingen probeert te herkennen.\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Images/GAN.png}
+    \caption{GAN visualisatie (hoog over)}
+    \label{fig:gan}
+\end{figure}
+
+\noindent Voorbeeld:
+\begin{enumerate}
+    \item Trek $m$ (minibatch) vectoren $z$ uit de latent space
+    \item De generator $G$ transformeert deze $z$ naar afbeeldingen $G(z)$ van de vorm (64,64,3)
+    \item Combineer de afbeeldingen met $m$ foto's uit de dataset
+    \item De discriminator $D$ kan nu supervised getraind worden
+    \item Herhaal $k$ (hyperparameter) keer
+    \item Trek opnieuw $m$ vectoren $z$
+    \item De generator wordt getraind door de $GAN(z)=D(G(z))$ zo te trainen dat het de $G(Z)$ als echt classificeert, terwijl $D$ niet verandert
+\end{enumerate}
+\noindent Enkele beslissingen wat betreft dit voorbeeld:
+\begin{enumerate}
+    \item We trekken uit de latent space volgens een normaalverdeling (ipv uniform)
+    \item GANs blijven vaak 'hangen'. Introduceren van toeval werkt hiertegen
+    \begin{itemize}
+        \item Aan de labels wordt ruis toegevoegd
+        \item Dropout in de discriminator
+    \end{itemize}
+    \item Sparse gradients werken GANs tegen. Daarom gebruiken we strides en leaky-relu's ipv pooling en relu's
+    \item Kies een kernel size die deelbaar is door de stride size (tegen dambordpatroon)
+\end{enumerate}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Images/generator.png}
+    \caption{Generator}
+    \label{fig:gen}
+\end{figure}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Images/discriminator.png}
+    \caption{Discriminator}
+    \label{fig:dis}
+\end{figure}
+\subsection{Doelfunctie van een GAN}
+\[
+\min_{G}\max_{D}[E_x(\textrm{ln}(D(x)))+E_z(\textrm{ln}(1-D(G(z))))]
+\]
+\begin{itemize}
+    \item $x$ uit dataset
+    \item $z$ gegenereerd
+    \item $D(x)$ de kans (volgens $D$) dat $x$ uit data komt
+    \item $D(G(z))$ de kans (volgens $D$) dat $G(z)$ uit data komt
+\end{itemize}
+\subsection{Loss-functies}
+De loss-functies voor de generator zijn als volgt te definiëren:
+\[\min_{G}[E_x(\textrm{ln}(D(x)))+E_z(\textrm{ln}(1-D(G(z))))]\]
+is equivalent aan 
+\[\min_{G}[-E_z(\textrm{ln}(D(G(z))))]\]
+Dit komt overeen met het minimaliseren van de binary cross-entropy ($-y\textrm{ln}(\hat{y}-(1-y)\textrm{ln}(1-\hat{y}$), met $y=1$ als afbeelding uit data en $y=0$ als afbeelding is gegenereerd.\\
+
+\noindent De loss-functies voor de discriminator zijn als volgt te definiëren:
+\[
+\max_{D}[E_x(\textrm{ln}(D(x)))+E_z(\textrm{ln}(1-D(G(z))))]
+\]
+is equivalent aan
+\[\min_{D}[-E_x(\textrm{ln}(D(x)))-E_z(\textrm{ln}(1-D(G(z))))]\]
+Dit komt ook overeen met het minimaliseren van de binary cross-entropy, die hierboven beschreven is.\\
+
+\noindent Bij een GAN zal het optimum niet vast liggen. Het trainen van de discriminator beinvloedt het optimum van de generator (en andersom). Het algoritme zal op zoek gaan naar een balans.
+
+\section{Clustering op tijdreeksen}
+Rekening houden met:
+\begin{itemize}
+    \item Schaling en translatie
+    \item Verschuiving in de tijd
+    \item Verlenging of verkorting
+    \item Missende of verkeerde waardes
+    \item Complexiteit (ruis)
+\end{itemize}
+\noindent Soorten tijdreeks clustering:
+\begin{itemize}
+    \item \textbf{Whole time-series clustering} (veel tijdreeksen waar clusters op moeten komen)
+    \begin{itemize}
+        \item \textbf{Time-series conversion} (domeinafhankelijk, past de data aan)
+        \begin{itemize}
+            \item \textbf{Model-based approach} (transformeren: zoals fourier-analyse, r.c. bepalen)
+            \item \textbf{Feature-based approach} (nieuwe variabele maken, hopen op meer informatie daarin en op clusteren)
+        \end{itemize}
+        \item \textbf{Shape-based approach/raw-data-based approach} (minder domeinafhankelijk, wat lijkt wel en wat niet: hele data erin gooien)
+    \end{itemize}
+    \item \textbf{Subsequence clustering} (binnen tijdreeks labelen)
+\end{itemize}
+\subsection{Shape-based approach}
+Je wilt dat de afstand anders gedefinieerd wordt, waardoor alle waves met dezelfde vorm in hetzelfde kader wordt geplaatst. Dus dat alleen de shape/vorm van belang is.
+\begin{itemize}
+    \item Normaliseer de data
+    \item Kies afstandsmaat
+    \begin{itemize}
+        \item \textbf{Euclidische afstand} (snel: geen verschuivingen oplossen, 'redelijke resultaten')
+        \item \textbf{Dynamic Time Warping} (accurater: met andere snelheden de vormen benaderen)
+        \item \textbf{Shape based distance measure} (snel en accuraat: $y$ vasthouden, $x$ verschuiven. Dan mis je iets, maar zet je een 0 voor in de plaats)
+    \end{itemize}
+    \item Kies clusteringsalgoritme
+    \begin{itemize}
+        \item \textbf{Partitional} ($k$-means,$k$-mediods, $k$-shape)
+        \item \textbf{Density based} (DBSCAN of HDBSCAN)
+    \end{itemize}
+\end{itemize}
+
+}
