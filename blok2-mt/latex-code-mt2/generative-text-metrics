@@ -1,0 +1,79 @@
+{\large
+\textbf{{\LARGE Bonus: Generative Text Metrics}}\\
+The scope of this workshop is about automatic metrics usesd for abstractive text summarization.
+\section{ROUGE}
+The ROUGE metric (used for comparing exact words), developed by Lin in 2004, is used to determine the lexical similarity between a generated text and a set of reference texts, typically created by humans. This metric is often employed in conjunction with evaluations from a crowd-sourced group of human annotators.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/rouge1.png}
+    \caption{Text summary}
+    \label{fig:rouge1}
+\end{figure}
+
+\subsection{Precision and Recall} % precision: order in sentence, recall: appearance in sentence
+\noindent A way to see how similar two texts are is by counting the number of tokens they have in common (6 in this case). ROUGE proposes a more clever approach computing the precision and recall scores for the overlap. ROUGE uses recall to measure how much of the reference summary is included in the generated summary. In other words, it tells you how many important pieces of information were included in the generated summary, by comparing it to the reference one. The formula to calculate recall when comparing tokens is as follows: 
+\[recall = \frac{number\ of\ overlapping\ tokens}{total\ number\ of\ tokens\ in\ reference}\] 
+\noindent
+This formula results in a recall of 6/6 = 1 with unigrams, which means that all words in the reference summary were also included in the generated summary. If the generated summary is verbose and contains unnecessary repetition, this also would have a high recall score, but not necessarily concise.\\
+
+\noindent To address this issue, ROUGE also calculates precision, which measures the proportion of relevant information in the generated summary as follows: 
+\[ precision = \frac{number\ of\ overlapping\ tokens}{total\ number\ of\ tokens\ in\ generated\ text}\] 
+\noindent 
+When applying this formula to the example of verbose summary, it would give a precision of 6/8 = 0.75, which is lower than recall of 6/6 = 1 obtained by the summary. To get a more complete picture of how good a summary is, ROUGE generally calculates both precision and recall and then finds the F1-score, which is the harmonic mean of these two values. In practice, the F1-score is commonly used to report the summary's performance.\\
+
+\subsection{ Using a package to calculate the ROUGE score}
+\noindent The snippet below uses the \href{https://pypi.org/project/rouge-score/}{{\fontfamily{cmtt}\selectfont rouge-score}} package to calculate the score. ROUGE has many variations and the simplest one called rouge-1 calculates de overlaps of unigrams - more specifically computing the overlap of words, as we discussed above.\\
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\linewidth]{Images/rouge2.png}
+    \caption{ROUGE}
+    \label{fig:rouge2}
+\end{figure}
+
+\noindent Other known variations of ROUGE scores: For example, ROUGE-2 looks at the overlap of two-word phrases (bigrams). ROUGE-L is based on the longest common subsequence (LCS) between our model output and reference, i.e. the longest sequence of words (not necessarily consecutive, but still in order) that is shared between both. A longer shared sequence should indicate more similarity between the two sequences.\\
+
+\section{BERTScore}
+\href{https://github.com/Tiiiger/bert_score}{BERTScore} (uses embedding of words as sentiment) is another metric for text generation. Some highlights from \href{https://huggingface.co/spaces/evaluate-metric/bertscore}{Huggingface}:
+\begin{enumerate}
+    \item It computes a similarity score for each token in the candidate sentence with each token in the reference sentence.
+    \item It leverages the pre-trained contextual embeddings from BERT models.
+    \item It matches words in candidate and reference sentences by cosine similarity.
+\end{enumerate}
+\noindent BERTScore computes precision, recall and F! measures.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Images/bertscore1.png}
+    \caption{BERTScore}
+    \label{fig:bertscore1}
+\end{figure}
+
+\subsection{Small-scale experiment}
+We are using a small-scale experiment with original texts, their respective references, and generated summaries. You can have a glimpse by look at the datasets/dataset.txt file.\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{Images/bertscore2.png}
+    \caption{BERTScore experiment}
+    \label{fig:bertscore2}
+\end{figure}
+\section{Human Judgement}
+o ensure semantic and factual accuracy, it is important to consult with domain experts who have knowledge of the human-written summaries.\\
+
+\noindent The work of Kryscinski et al. proposes an approach to evaluate the quality of generated text, going beyond current metrics. It includes human annotators as part of the evaluation process. More Information can be found on her article \href{https://arxiv.org/pdf/1908.08960.pdf}{Neural Text Summarization: A Critical Evaluation}.\\
+
+\noindent Authors claimed that experts and crowd-sources can evaluate generated text using the following dimensions:
+\begin{enumerate}
+    \item relevance (selection of important content from the source)
+    \item consistency (factual alignment between the summary and the source)
+    \item fluency (quality of individual sentences)
+    \item coherence (collenctive quality of all sentences)
+\end{enumerate}
+\section{Summary}
+\begin{itemize}
+    \item To evaluate the performance of an abstractive summarization model, ROUGE can be used to measure the overlap between the generated summary and the reference summary.
+    \item The BERTScore metric (and a variety of others) attempts to overcome ROUGE limitations, by leveraging the pre-trained contextual embeddings from BERT. Then it matches words in candidate and reference sentences by cosine similarity.
+    \item These automatic metrics can be used as an initial indicator of how much the generated summary overlaps with the human written summary.
+    \item To ensure semantic and factual accuracy, it is important to consult with domain experts who have knowledge of the human-written summaries.
+\end{itemize}
+}
