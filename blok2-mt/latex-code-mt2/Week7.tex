@@ -1,0 +1,44 @@
+{\large
+\textbf{{\LARGE Week 7}}
+\section{Deep Belief Networks}
+Het idee van een DBN is dat de \textit{features} van een RBM gebruikt worden als invoer voor een volgende RBM, en zo een paar lagen diep.
+\begin{itemize}
+    \item In feite is dit een Boltzmann Machine met een zwakkere restrictie dan een RBM, er mogen nu wel correlaties zijn tussen \textit{hidden nodes}, maar niet in dezelfde laag. 
+    \item De diepere lagen leren meer en meer abstracte features.
+\end{itemize}
+\noindent Voordeel is dat deze lagen 1 voor 1 getraind kunnen worden. Dit maakt het een van de historisch eerste \textit{deep learning} modellen die efficiënt getraind kon worden.\\
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\linewidth]{Images/DBNgraph.png}
+    \caption{Deep Belief Network vs. Deep Boltzmann Machine}
+    \label{fig:DBNvsDBM}
+\end{figure}
+
+\noindent We kunnen nieuwe afbeeldingen genereren door een oorspronkelijk beeld nu aan de \textit{visible} laag aan te bieden, de \textit{hidden} lagen een voor een te samplen, en dan terug te gaan en de \textit{visible} lagen te samplen.\\
+
+\noindent We kunnen de gewichten en bias van een DBN gebruiken om een neuraal netwerk te initialiseren. Dit is een vorm van \textit{transfer learning}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\linewidth]{Images/DBNMNIST.png}
+    \caption{Deep Belief Network on MNIST-dataset}
+    \label{fig:DBN}
+\end{figure}
+
+
+% -semi sup (50000/100000, nepgelabeld) en sup (5000): voorspelmodel maken, dat vergeleken met classifier die getraind is op 5000 uit traindata
+
+% vergelijking maken tussen sup en semi sup. classifier naar keuze (beslisboom/NN), 5000 trainset
+% - Heeft dit model geholpen? Testen door met classifier op beide modellen te runnen en kijken wat beter werkt. 
+
+% 5000, 10 per afbeelding genereren. 
+
+% testen met bijvoorbeeld MNIST dataset. Mogen we zelf kiezen, ook hoeveel maakt niet uit in theorie.
+
+% code van robert slides tot data genereren plaatjes. dan iets slims doen om niet 10 plaatjes maar heel veel meer plaatjes.
+
+
+% iteratieleerdoel: met (niet teveel) woorden beschrijven wat volgende stap zou kunnen zijn.
+
+}
